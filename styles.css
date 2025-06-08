@@ -1,0 +1,33 @@
+#board {
+    position: absolute;
+    border: black 2px solid;
+    z-index: 0;
+}
+
+.chess-frame {
+    display: flex;
+    justify-content: center;
+    margin: auto;
+    z-index: 0;
+}
+
+#overlay {
+    position: absolute;
+    width: 800px;
+    height: 800px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.cell {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    z-index: 3;
+    box-sizing: border-box;
+    border: 1px solid red;
+    pointer-events: auto;
+    user-select: none;       /* prevent text selection */
+    outline: none;           /* remove focus outline */
+    caret-color: transparent;
+}
