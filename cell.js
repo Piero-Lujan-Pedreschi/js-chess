@@ -1,3 +1,5 @@
+
+
 export class Cell {
     constructor(horizontalValue, verticalValue) {
         this.position = `${horizontalValue}${verticalValue}`;
@@ -20,8 +22,8 @@ export class Cell {
         this.valid = false;
     }
 
-    setValue(pieceObj) {
-        return;
+    setValue(newPieceObj) {
+        this.value = newPieceObj;
     }
 
     getValue() {
@@ -37,7 +39,7 @@ export class Cell {
         this.cellEl.setAttribute("class", "cell");
         this.cellEl.setAttribute('id', this.position);
         this.cellEl.addEventListener('click', () => this.handleClick());
-        console.log(this.cellEl);
+        // console.log(this.cellEl);
     }
 
     handleClick() {

@@ -1,4 +1,5 @@
 import {Cell} from './cell.js';
+import {Piece} from './piece.js';
 
 export class Board {
     constructor() {
@@ -7,7 +8,9 @@ export class Board {
         this.board.width = 800;
         this.board.height = 800;
         this.cellSize = this.board.width / 8;
+        this.cells = [];
         this.drawBoard();
+        this.setBoard();
     }
 
     drawBoard() {
@@ -18,6 +21,7 @@ export class Board {
             const row = r;
 
             const cell = new Cell(col, row);
+            this.cells.push(cell);
             this.overlay.appendChild(cell.cellEl);
 
             const x = (c - 1) * this.cellSize;
@@ -31,6 +35,15 @@ export class Board {
             this.square.fillRect(x, y, this.cellSize, this.cellSize);
         }
         }
+    }
+
+    setBoard() {
+        const cell = this.cells[0];
+        const piece = new Piece(cell.position);
+        console.log(cell.cellEl);
+        cell.cellEl.appendChild(piece.pieceEl);
+        cell.setValue(piece);
+        
     }
 }
 
