@@ -1,18 +1,21 @@
 export class Piece {
-    constructor(loc) {
+    constructor(game, loc) {
         this.color = "white";
         this.moveSet = [[1, 0], [0, 1], [-1, 0], [0, -1]];
         this.pieceEl = null;
         this.createElement();
         this.location = loc;
         this.selected = false;
-        console.log(this.location);
+
+        this.game = game;
+        this.game.whitePieces.push(this);
     }
 
     createElement() {
         this.pieceEl = document.createElement("div");
         this.pieceEl.setAttribute("class", "piece");
         this.pieceEl.addEventListener('click', () => this.selectPiece())
+        this.pieceEl.pieceObj = this;
         console.log("new Piece has been created");
     }
 
@@ -21,7 +24,7 @@ export class Piece {
     }
 
     getLocation() {
-        return this.loc;
+        return this.location;
     }
 
     selectPiece() {
@@ -29,10 +32,16 @@ export class Piece {
         console.log(this.selected);
         if (this.selected) {
             this.pieceEl.style.borderColor = 'green';
+            console.log('piece has been selected');
+            this.game.pieceSelected = this;
+            console.log(this.game.pieceSelected);
         } else {
             this.pieceEl.style.borderColor = "red";
-
+            console.log("piece has been unselected");
+            this.game.pieceSelected = null;
+            console.log(this.game.pieceSelected);
         }
+
     }
 
     movePiece(newCell) {
