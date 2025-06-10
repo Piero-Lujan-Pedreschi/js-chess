@@ -18,12 +18,12 @@ export class Cell {
 
     setValid() {
         this.valid = true;
-        console.log(`${this.position} is now valid`);
+        // console.log(`${this.position} is now valid`);
     }
 
     setInvalid() {
         this.valid = false;
-        console.log(`${this.position} is now invalid`);
+        // console.log(`${this.position} is now invalid`);
     }
 
     setValue(newPieceObj) {
@@ -63,17 +63,6 @@ export class Cell {
         console.log(`Cell ${this.position} was clicked`);
         if (this.isValid() && this.game.pieceSelected) {
             this.game.pieceSelected.movePiece(this);
-            // const pieceEl = this.game.pieceSelected.pieceEl;
-            // const parentCellEl = pieceEl.parentNode;
-            // parentCellEl.cellObj.setValid();
-            // const oldPos = parentCellEl.id;
-            // parentCellEl.removeChild(pieceEl);
-            
-            // this.cellEl.appendChild(pieceEl);
-            // this.setValue(pieceEl.pieceObj);
-            // this.game.pieceSelected = null;
-            // this.value.setLocation(this.position);
-            // this.value.selectPiece();
         } 
     }
 }

@@ -1,7 +1,7 @@
 export class Piece {
     constructor(game, loc) {
         this.color = "white";
-        this.moveSet = [[1, 0], [0, 1], [-1, 0], [0, -1]];
+        this.moveSet = [[2, 0], [0, 2], [-2, 0], [0, -2]];
         this.pieceEl = null;
         this.createElement();
         this.location = loc;
@@ -46,21 +46,27 @@ export class Piece {
 
     movePiece(newCell) {
         const newHPos = letterToCol(newCell.position[0]);
-        console.log(newHPos);
         const newVPos = parseInt(newCell.position[1]);
-        console.log(newVPos);
+        
         const oldCell = this.pieceEl.parentElement.cellObj;
 
         const hLoc = letterToCol(oldCell.position[0]);
-        console.log(hLoc);
         const vLoc = parseInt(oldCell.position[1]);
-        console.log(vLoc);
+
+        const dx = newHPos - hLoc;
+        const dy = newVPos - vLoc;
+        console.log(`dx = ${dx} dy = ${dy}`);
         
-        const move = [newHPos - hLoc, newVPos - vLoc];
+        const move = [dx, dy];
 
-        console.log(move);
+        const isLegal = this.moveSet.some((ms) =>
+          isSameOrShorterMove(ms, move)
+        );
 
-        if (this.moveSet.some((m) => m[0] === move[0] && m[1] === move[1])) {
+
+        console.log(`${move} is legal: ${isLegal}`);
+
+        if (isLegal) {
            console.log(`piece can move to ${newCell.position}`);
            const cell = newCell;
            const parentCellEl = this.pieceEl.parentNode;
@@ -75,17 +81,6 @@ export class Piece {
         } else {
             console.log('select an allowed cell');
         }
-
-        // const cell = newCell;
-        // const parentCellEl = this.pieceEl.parentNode;
-        // parentCellEl.cellObj.setValid();
-        // parentCellEl.removeChild(this.pieceEl);
-
-        // cell.cellEl.appendChild(this.pieceEl);
-        // cell.setValue(this);
-        // this.game.pieceSelected = null;
-        // this.setLocation(cell.position);
-        // this.selectPiece();
     }
 }
 
@@ -97,3 +92,18 @@ function letterToCol(letter) {
   return undefined;
 }
   
+function isSameOrShorterMove(moveSet, move) {
+  const [dxSet, dySet] = moveSet;
+  const [dx, dy] = move;
+
+  // Make sure direction is the same
+  const sameDirection =
+    (dxSet === 0 ? dx === 0 : Math.sign(dx) === Math.sign(dxSet)) &&
+    (dySet === 0 ? dy === 0 : Math.sign(dy) === Math.sign(dySet));
+
+  // Magnitude check
+  const withinBounds =
+    Math.abs(dx) <= Math.abs(dxSet) && Math.abs(dy) <= Math.abs(dySet);
+
+  return sameDirection && withinBounds;
+}

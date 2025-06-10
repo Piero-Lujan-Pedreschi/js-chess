@@ -41,16 +41,13 @@ export class Board {
     }
 
     setBoard() {
-        const cell = this.cells[0];
+        const cell = this.cells[27];
         const piece = new Piece(this.game, cell.position);
         cell.cellEl.appendChild(piece.pieceEl);
         cell.setValue(piece);
         
     }
 
-    movePiece(pieceObj) {
-
-    }
 }
 
 function colToLetter(num) {
