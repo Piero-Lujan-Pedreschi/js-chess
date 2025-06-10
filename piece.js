@@ -45,24 +45,55 @@ export class Piece {
     }
 
     movePiece(newCell) {
-        const newHPos = parseInt(newCell.position[0]);
+        const newHPos = letterToCol(newCell.position[0]);
+        console.log(newHPos);
         const newVPos = parseInt(newCell.position[1]);
-        const hLoc = parseInt(location[0]);
-        const vLoc = parseInt(location[1]);
+        console.log(newVPos);
+        const oldCell = this.pieceEl.parentElement.cellObj;
 
-        if (this.moveSet.includes([newHPos - hLoc, newVPos - vLoc])) {
-            console.log(`piece can move to ${newCell.position}`);
+        const hLoc = letterToCol(oldCell.position[0]);
+        console.log(hLoc);
+        const vLoc = parseInt(oldCell.position[1]);
+        console.log(vLoc);
+        
+        const move = [newHPos - hLoc, newVPos - vLoc];
+
+        console.log(move);
+
+        if (this.moveSet.some((m) => m[0] === move[0] && m[1] === move[1])) {
+           console.log(`piece can move to ${newCell.position}`);
+           const cell = newCell;
+           const parentCellEl = this.pieceEl.parentNode;
+           parentCellEl.cellObj.setValid();
+           parentCellEl.removeChild(this.pieceEl);
+
+           cell.cellEl.appendChild(this.pieceEl);
+           cell.setValue(this);
+           this.game.pieceSelected = null;
+           this.setLocation(cell.position);
+           this.selectPiece();
+        } else {
+            console.log('select an allowed cell');
         }
 
-        const cell = newCell;
-        const parentCellEl = this.pieceEl.parentNode;
-        parentCellEl.cellObj.setValid();
-        parentCellEl.removeChild(this.pieceEl);
+        // const cell = newCell;
+        // const parentCellEl = this.pieceEl.parentNode;
+        // parentCellEl.cellObj.setValid();
+        // parentCellEl.removeChild(this.pieceEl);
 
-        cell.cellEl.appendChild(this.pieceEl);
-        cell.setValue(this);
-        this.game.pieceSelected = null;
-        this.setLocation(cell.position);
-        this.selectPiece();
+        // cell.cellEl.appendChild(this.pieceEl);
+        // cell.setValue(this);
+        // this.game.pieceSelected = null;
+        // this.setLocation(cell.position);
+        // this.selectPiece();
     }
 }
+
+function letterToCol(letter) {
+  const upper = letter.toUpperCase();
+  if (upper >= "A" && upper <= "H") {
+    return upper.charCodeAt(0) - 64;
+  }
+  return undefined;
+}
+  
