@@ -62,17 +62,18 @@ export class Cell {
     handleClick() {
         console.log(`Cell ${this.position} was clicked`);
         if (this.isValid() && this.game.pieceSelected) {
-            const pieceEl = this.game.pieceSelected.pieceEl;
-            const parentCellEl = pieceEl.parentNode;
-            parentCellEl.cellObj.setValid();
-            const oldPos = parentCellEl.id;
-            parentCellEl.removeChild(pieceEl);
+            this.game.pieceSelected.movePiece(this);
+            // const pieceEl = this.game.pieceSelected.pieceEl;
+            // const parentCellEl = pieceEl.parentNode;
+            // parentCellEl.cellObj.setValid();
+            // const oldPos = parentCellEl.id;
+            // parentCellEl.removeChild(pieceEl);
             
-            this.cellEl.appendChild(pieceEl);
-            this.setValue(pieceEl.pieceObj);
-            this.game.pieceSelected = null;
-            this.value.setLocation(this.position);
-            this.value.selectPiece();
-        }
+            // this.cellEl.appendChild(pieceEl);
+            // this.setValue(pieceEl.pieceObj);
+            // this.game.pieceSelected = null;
+            // this.value.setLocation(this.position);
+            // this.value.selectPiece();
+        } 
     }
 }

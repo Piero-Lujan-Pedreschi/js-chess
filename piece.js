@@ -45,13 +45,24 @@ export class Piece {
     }
 
     movePiece(newCell) {
-        const newHPos = newCell.position[0];
-        const newVPos = newCell.position[1];
-        const hLoc = location[0];
-        const vLoc = location[1];
+        const newHPos = parseInt(newCell.position[0]);
+        const newVPos = parseInt(newCell.position[1]);
+        const hLoc = parseInt(location[0]);
+        const vLoc = parseInt(location[1]);
 
-        if (moveSet.includes([newHPos - hLoc, newVPos - vLoc])) {
+        if (this.moveSet.includes([newHPos - hLoc, newVPos - vLoc])) {
             console.log(`piece can move to ${newCell.position}`);
         }
+
+        const cell = newCell;
+        const parentCellEl = this.pieceEl.parentNode;
+        parentCellEl.cellObj.setValid();
+        parentCellEl.removeChild(this.pieceEl);
+
+        cell.cellEl.appendChild(this.pieceEl);
+        cell.setValue(this);
+        this.game.pieceSelected = null;
+        this.setLocation(cell.position);
+        this.selectPiece();
     }
 }
