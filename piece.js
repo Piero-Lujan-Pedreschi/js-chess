@@ -14,7 +14,14 @@ export class Piece {
     createElement() {
         this.pieceEl = document.createElement("div");
         this.pieceEl.setAttribute("class", "piece");
-        this.pieceEl.addEventListener('click', () => this.selectPiece())
+        this.pieceEl.addEventListener('click', () => {
+            if (this === this.game.pieceSelected || this.game.pieceSelected === null) {
+                this.selectPiece();
+            } else {
+                console.log("please unselect selected piece");
+            }
+            
+        });
         this.pieceEl.pieceObj = this;
         console.log("new Piece has been created");
     }
@@ -32,14 +39,14 @@ export class Piece {
         console.log(this.selected);
         if (this.selected) {
             this.pieceEl.style.borderColor = 'green';
-            console.log('piece has been selected');
+            // console.log('piece has been selected');
             this.game.pieceSelected = this;
-            console.log(this.game.pieceSelected);
+            // console.log(this.game.pieceSelected);
         } else {
             this.pieceEl.style.borderColor = "red";
-            console.log("piece has been unselected");
+            // console.log("piece has been unselected");
             this.game.pieceSelected = null;
-            console.log(this.game.pieceSelected);
+            // console.log(this.game.pieceSelected);
         }
 
     }
@@ -55,7 +62,6 @@ export class Piece {
 
         const dx = newHPos - hLoc;
         const dy = newVPos - vLoc;
-        console.log(`dx = ${dx} dy = ${dy}`);
         
         const move = [dx, dy];
 
@@ -66,7 +72,7 @@ export class Piece {
 
         console.log(`${move} is legal: ${isLegal}`);
 
-        if (isLegal) {
+        if (isLegal && this.isPathClear(newCell, move)) {
            console.log(`piece can move to ${newCell.position}`);
            const cell = newCell;
            const parentCellEl = this.pieceEl.parentNode;
@@ -82,12 +88,73 @@ export class Piece {
             console.log('select an allowed cell');
         }
     }
+
+    isPathClear(newCell, move) {
+        const path = [];
+
+        const dx = move[0];
+        const dy = move[1];
+
+        const newXPos = letterToCol(newCell.position[0]);
+        const newYPos = parseInt(newCell.position[1]);
+
+        const startCell = this.pieceEl.parentElement.cellObj;
+
+        let x = letterToCol(startCell.position[0]);
+        let y = parseInt(startCell.position[1]);
+        console.log(`x : ${x} - y : ${y}`);
+
+        while (x !== newXPos || y !== newYPos) {
+            if (x < newXPos && y === newYPos) {
+              x++;
+            } else if (x > newXPos && y === newYPos) {
+              x--;
+            } else if (x < newXPos && y < newYPos) {
+              x++;
+              y++;
+            } else if (x < newXPos && y > newYPos) {
+              x++;
+              y--;
+            } else if (x === newXPos && y < newYPos) {
+              y++;
+            } else if (x === newXPos && y > newYPos) {
+              y--;
+            } else if (x > newXPos && y > newYPos) {
+              x--;
+              y--;
+            } else if (x > newXPos && y < newYPos) {
+              x--;
+              y++;
+            } else if (x === newXPos && y === newYPos) {
+              break;
+            }
+            console.log(`x : ${x} - y : ${y}`);
+
+            path.push(`${`${colToLetter(x)}${y}`}`);
+            console.log(path);
+            // get proper position for board Class .getCell()
+            console.log(`cell ${`${colToLetter(x)}${y}`} is along path`);
+            if (!this.game.chessBoard.getCell(`${colToLetter(x)}${y}`).isValid()) {
+                console.log(`path is not clear to ${newCell.position}`);
+                return false;
+            }
+        }
+        console.log('path is clear');
+        return true;
+    }
 }
 
 function letterToCol(letter) {
   const upper = letter.toUpperCase();
   if (upper >= "A" && upper <= "H") {
     return upper.charCodeAt(0) - 64;
+  }
+  return undefined;
+}
+
+function colToLetter(num) {
+  if (num >= 1 && num <= 8) {
+    return String.fromCharCode(64 + num);
   }
   return undefined;
 }
@@ -106,4 +173,8 @@ function isSameOrShorterMove(moveSet, move) {
     Math.abs(dx) <= Math.abs(dxSet) && Math.abs(dy) <= Math.abs(dySet);
 
   return sameDirection && withinBounds;
+}
+
+function areCoordsEqual(position, finalPos) {
+    return position[0] === finalPos[0] && position[1] === finalPos[1];
 }

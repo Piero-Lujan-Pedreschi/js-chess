@@ -44,23 +44,18 @@ export class Cell {
         return this.position;
     }
 
-    getCell(position) {
-        if (pos === this.position) {
-            return this;
-        }
-    }
 
     createElement() {
         this.cellEl = document.createElement("div");
         this.cellEl.setAttribute("class", "cell");
         this.cellEl.setAttribute('id', this.position);
+        this.cellEl.textContent = `${this.position}`;
         this.cellEl.cellObj = this;
         this.cellEl.addEventListener('click', () => this.handleClick());
         // console.log(this.cellEl);
     }
 
     handleClick() {
-        console.log(`Cell ${this.position} was clicked`);
         if (this.isValid() && this.game.pieceSelected) {
             this.game.pieceSelected.movePiece(this);
         } 
