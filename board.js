@@ -42,11 +42,18 @@ export class Board {
   }
 
   setBoard() {
-    for (let i = 0; i < 16; i++) {
+    for (let i = 0; i < 2; i++) {
       const cell = this.cells[i];
       const pawn = new Pawn(this.game, cell.position);
       cell.cellEl.appendChild(pawn.pieceEl);
       cell.setValue(pawn);
+      if (i == 0) {
+        pawn.assignColor("white");
+        console.log('white');
+      } else {
+        pawn.assignColor("black");
+        console.log('black')
+      }
     }
   }
 

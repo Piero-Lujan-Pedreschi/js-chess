@@ -41,3 +41,11 @@
     border: 2px red solid;
     z-index: 10;
 }
+
+.white {
+    background: white;
+}
+
+.black {
+    background: black;
+}

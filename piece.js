@@ -1,15 +1,25 @@
 export class Piece {
     constructor(game, loc) {
-        this.color = "white";
+        this.color;
         this.moveSet;
         this.pieceEl = null;
         this.createElement();
         this.location = loc;
         this.selected = false;
-        // this.moveCount = 0;
-
+        this.moveCount = 0;
         this.game = game;
-        this.game.whitePieces.push(this);
+        
+    }
+
+    assignColor(color) {
+        this.color = color;
+        if (this.color == 'white') {
+          this.pieceEl.classList.add("white");
+          this.game.whitePieces.push(this);
+        } else {
+          this.pieceEl.classList.add("black");
+          this.game.blackPieces.push(this); 
+        }
     }
 
     createElement() {
@@ -37,7 +47,7 @@ export class Piece {
 
     selectPiece() {
         this.selected = !this.selected;
-        console.log(this.selected);
+        // console.log(this.selected);
         if (this.selected) {
             this.pieceEl.style.borderColor = 'green';
             // console.log('piece has been selected');
@@ -74,6 +84,11 @@ export class Piece {
         console.log(`${move} is legal: ${isLegal}`);
 
         if (isLegal && this.isPathClear(newCell, move)) {
+          this.moveCount++;
+
+          if (this.moveCount === 1) {
+            this.onFirstMove?.();
+          }
            console.log(`piece can move to ${newCell.position}`);
            const cell = newCell;
            const parentCellEl = this.pieceEl.parentNode;
