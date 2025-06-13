@@ -1,5 +1,6 @@
 import {Cell} from './cell.js';
 import {Piece} from './piece.js';
+import {Pawn} from './pawn.js';
 
 export class Board {
   constructor(game, cellArray) {
@@ -41,14 +42,12 @@ export class Board {
   }
 
   setBoard() {
-    const cell = this.cells[0];
-    const cell2 = this.cells[1];
-    const piece = new Piece(this.game, cell.position);
-    const piece2 = new Piece(this.game, cell2.position);
-    cell.cellEl.appendChild(piece.pieceEl);
-    cell2.cellEl.appendChild(piece2.pieceEl);
-    cell.setValue(piece);
-    cell2.setValue(piece2);
+    for (let i = 0; i < 16; i++) {
+      const cell = this.cells[i];
+      const pawn = new Pawn(this.game, cell.position);
+      cell.cellEl.appendChild(pawn.pieceEl);
+      cell.setValue(pawn);
+    }
   }
 
   getCell(position) {

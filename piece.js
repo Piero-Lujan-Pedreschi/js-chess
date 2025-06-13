@@ -1,11 +1,12 @@
 export class Piece {
     constructor(game, loc) {
         this.color = "white";
-        this.moveSet = [[2, 0], [0, 2], [-2, 0], [0, -2]];
+        this.moveSet;
         this.pieceEl = null;
         this.createElement();
         this.location = loc;
         this.selected = false;
+        // this.moveCount = 0;
 
         this.game = game;
         this.game.whitePieces.push(this);
@@ -18,12 +19,12 @@ export class Piece {
             if (this === this.game.pieceSelected || this.game.pieceSelected === null) {
                 this.selectPiece();
             } else {
-                console.log("please unselect selected piece");
+                // console.log("please unselect selected piece");
             }
             
         });
         this.pieceEl.pieceObj = this;
-        console.log("new Piece has been created");
+        // console.log("new Piece has been created");
     }
 
     setLocation(newLoc) {
@@ -84,9 +85,12 @@ export class Piece {
            this.game.pieceSelected = null;
            this.setLocation(cell.position);
            this.selectPiece();
+          //  this.moveCount++;
+           return true;
         } else {
             console.log('select an allowed cell');
         }
+        return false;
     }
 
     isPathClear(newCell, move) {
@@ -102,7 +106,6 @@ export class Piece {
 
         let x = letterToCol(startCell.position[0]);
         let y = parseInt(startCell.position[1]);
-        console.log(`x : ${x} - y : ${y}`);
 
         while (x !== newXPos || y !== newYPos) {
             if (x < newXPos && y === newYPos) {
@@ -128,12 +131,10 @@ export class Piece {
             } else if (x === newXPos && y === newYPos) {
               break;
             }
-            console.log(`x : ${x} - y : ${y}`);
 
             path.push(`${`${colToLetter(x)}${y}`}`);
             console.log(path);
-            // get proper position for board Class .getCell()
-            console.log(`cell ${`${colToLetter(x)}${y}`} is along path`);
+            // console.log(`cell ${`${colToLetter(x)}${y}`} is along path`);
             if (!this.game.chessBoard.getCell(`${colToLetter(x)}${y}`).isValid()) {
                 console.log(`path is not clear to ${newCell.position}`);
                 return false;
@@ -175,6 +176,3 @@ function isSameOrShorterMove(moveSet, move) {
   return sameDirection && withinBounds;
 }
 
-function areCoordsEqual(position, finalPos) {
-    return position[0] === finalPos[0] && position[1] === finalPos[1];
-}
