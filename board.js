@@ -44,7 +44,7 @@ export class Board {
   setBoard() {
     for (let i = 0; i < 2; i++) {
       const cell = this.cells[i];
-      const pawn = new Pawn(this.game, cell.position);
+      const pawn = new Pawn(this.game, cell);
       cell.cellEl.appendChild(pawn.pieceEl);
       cell.setValue(pawn);
       if (i == 0) {

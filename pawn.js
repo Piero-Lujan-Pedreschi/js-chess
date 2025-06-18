@@ -7,10 +7,19 @@ export class Pawn extends Piece {
       [0, 1],
       [0, 2],
     ];
+    this.killMoveSet = this.assignKM(this.color);
   }
 
   onFirstMove() {
     this.moveSet.pop();
+  }
+
+  assignKM(color) {
+    if (color == 'white') {
+      return [[1, 1], [-1, 1]];
+    } else {
+      return [[1, -1], [-1, -1]];
+    }
   }
 
   createElement() {
