@@ -23,7 +23,7 @@ export class Pawn extends Piece {
   }
 
   createElement() {
-    super.createElement(); // call base setup
-    this.pieceEl.classList.add("pawn"); // add specific class
+    super.createElement();
+    this.pieceEl.classList.add("pawn"); 
   }
 }

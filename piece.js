@@ -50,7 +50,7 @@ export class Piece {
   selectPiece() {
     if (this.game.playerTurn == this.color) {
       this.selected = !this.selected;
-    // console.log(this.selected);
+      // console.log(this.selected);
       if (this.selected) {
         this.pieceEl.style.borderColor = "green";
         // console.log('piece has been selected');
@@ -63,17 +63,17 @@ export class Piece {
         // console.log(this.game.pieceSelected);
       }
     } else {
-      console.log('please select a piece of your color');
+      console.log("please select a piece of your color");
     }
   }
 
   movePiece(newCell) {
-    const xf = letterToCol(newCell.position[0]);
+    const xf = this.letterToCol(newCell.position[0]);
     const yf = parseInt(newCell.position[1]);
 
     const oldCell = this.currentCell;
 
-    const xi = letterToCol(oldCell.position[0]);
+    const xi = this.letterToCol(oldCell.position[0]);
     const yi = parseInt(oldCell.position[1]);
 
     const dx = xf - xi;
@@ -81,7 +81,9 @@ export class Piece {
 
     const move = [dx, dy];
 
-    const isLegal = this.moveSet.some((ms) => this.isSameOrShorterMove(ms, move));
+    const isLegal = this.moveSet.some((ms) =>
+      this.isSameOrShorterMove(ms, move)
+    );
 
     console.log(`${move} is legal: ${isLegal}`);
 
@@ -109,21 +111,20 @@ export class Piece {
       console.log("select an allowed cell");
       return false;
     }
-    
   }
 
   isPathClear(newCell) {
     const path = [];
 
-    const newXPos = letterToCol(newCell.position[0]);
+    const newXPos = this.letterToCol(newCell.position[0]);
     const newYPos = parseInt(newCell.position[1]);
 
     const startCell = this.pieceEl.parentElement.cellObj;
 
-    let x = letterToCol(startCell.position[0]);
+    let x = this.letterToCol(startCell.position[0]);
     let y = parseInt(startCell.position[1]);
 
-    while (x !== newXPos || y !== newYPos) {
+    while (x !== newXPos && y !== newYPos) {
       if (x < newXPos && y === newYPos) {
         x++;
       } else if (x > newXPos && y === newYPos) {
@@ -149,10 +150,10 @@ export class Piece {
       //   break;
       // }
 
-      path.push(`${`${colToLetter(x)}${y}`}`);
+      path.push(`${`${this.colToLetter(x)}${y}`}`);
       console.log(path);
       // console.log(`cell ${`${colToLetter(x)}${y}`} is along path`);
-      if (!this.game.chessBoard.getCell(`${colToLetter(x)}${y}`).isValid()) {
+      if (!this.game.chessBoard.getCell(`${this.colToLetter(x)}${y}`).isValid()) {
         console.log(`path is not clear to ${newCell.position}`);
         return false;
       }
@@ -176,21 +177,19 @@ export class Piece {
 
     return sameDirection && withinBounds;
   }
-}
 
-function letterToCol(letter) {
-  const upper = letter.toUpperCase();
-  if (upper >= "A" && upper <= "H") {
-    return upper.charCodeAt(0) - 64;
+  letterToCol(letter) {
+    const upper = letter.toUpperCase();
+    if (upper >= "A" && upper <= "H") {
+      return upper.charCodeAt(0) - 64;
+    }
+    return undefined;
   }
-  return undefined;
-}
 
-function colToLetter(num) {
-  if (num >= 1 && num <= 8) {
-    return String.fromCharCode(64 + num);
+  colToLetter(num) {
+    if (num >= 1 && num <= 8) {
+      return String.fromCharCode(64 + num);
+    }
+    return undefined;
   }
-  return undefined;
 }
-  
-

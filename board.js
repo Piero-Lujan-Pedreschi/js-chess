@@ -1,6 +1,11 @@
 import {Cell} from './cell.js';
 import {Piece} from './piece.js';
 import {Pawn} from './pawn.js';
+import {Rook} from './rook.js';
+import {Bishop} from './bishop.js';
+import {Knight} from './knight.js';
+import {Queen} from './queen.js';
+import {King} from './king.js';
 
 export class Board {
   constructor(game, cellArray) {
@@ -44,14 +49,14 @@ export class Board {
   setBoard() {
     for (let i = 0; i < 2; i++) {
       const cell = this.cells[i];
-      const pawn = new Pawn(this.game, cell);
-      cell.cellEl.appendChild(pawn.pieceEl);
-      cell.setValue(pawn);
+      const piece = new King(this.game, cell);
+      cell.cellEl.appendChild(piece.pieceEl);
+      cell.setValue(piece);
       if (i == 0) {
-        pawn.assignColor("white");
+        piece.assignColor("white");
         console.log('white');
       } else {
-        pawn.assignColor("black");
+        piece.assignColor("black");
         console.log('black')
       }
     }
