@@ -151,12 +151,8 @@ export class Piece {
         x--;
         y++;
       }
-      
-      if (x === newXPos && y === newYPos && !newCell.isValid() && this.color !== newCell.getValue()?.getColor()) {
-        console.log("can replace piece");
-        this.removePiece(newCell);
-        return true;
-      }
+
+      if (x === newXPos && y === newYPos) break;
 
       path.push(`${`${this.colToLetter(x)}${y}`}`);
       console.log(path);
@@ -166,14 +162,37 @@ export class Piece {
         return false;
       }
     }
+
+    const targetPiece = newCell.getValue();
+    if (targetPiece && targetPiece.getColor() !== this.color) {
+      console.log("can replace piece");
+        const capturedPiece = this.removePiece(newCell);
+        if (capturedPiece) {
+          (this.color === "white"
+            ? this.game.whiteTakenPieces
+            : this.game.blackTakenPieces
+          ).push(capturedPiece);
+          console.log(`white taken pieces: ${this.game.whiteTakenPieces}`);
+          console.log(`black taken pieces: ${this.game.blackTakenPieces}`);
+        } 
+        
+    } else if (targetPiece && targetPiece.getColor() === this.color) {
+      console.log('cannot capture piece of same color');
+      return false;
+    }
+
     console.log("path is clear");
     return true;
   }
 
   removePiece(newCell) {
-    const cell = newCell;
-    const piece = cell.getValue();
-    cell.cellEl.removeChild(piece.pieceEl);
+    const piece = newCell.getValue();
+    if (!piece) {
+      return null
+    }
+
+    newCell.cellEl.removeChild(piece.pieceEl);
+    newCell.setValue(null); // Clear the piece from the board
     return piece;
   }
 

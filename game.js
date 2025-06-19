@@ -4,7 +4,10 @@ import {Piece} from '/piece.js';
 class Game {
   constructor() {
     this.whitePieces = [];
+    this.whiteTakenPieces = [];
     this.blackPieces = [];
+    this.blackTakenPieces = [];
+    this.array = [];
     this.chessBoard = new Board(this);
     this.pieceSelected = null;
     this.moveComplete = false;
