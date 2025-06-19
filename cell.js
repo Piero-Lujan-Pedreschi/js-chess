@@ -35,10 +35,13 @@ export class Cell {
         }
     }
 
-
     getValue() {
         return this.value;
     }
+
+    // removeValue() {
+
+    // }
 
     getPosition() {
         return this.position;
@@ -56,7 +59,7 @@ export class Cell {
     }
 
     handleClick() {
-        if (this.isValid() && this.game.pieceSelected) {
+        if (this.game.pieceSelected) {
             this.game.pieceSelected.movePiece(this);
         } 
     }

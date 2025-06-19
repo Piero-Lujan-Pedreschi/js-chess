@@ -22,6 +22,10 @@ export class Piece {
     }
   }
 
+  getColor() {
+    return this.color;
+  }
+
   createElement() {
     this.pieceEl = document.createElement("div");
     this.pieceEl.setAttribute("class", "piece");
@@ -93,6 +97,7 @@ export class Piece {
       if (this.moveCount === 1) {
         this.onFirstMove?.();
       }
+
       console.log(`piece can move to ${newCell.position}`);
       const cell = newCell;
       const parentCellEl = this.pieceEl.parentNode;
@@ -124,7 +129,7 @@ export class Piece {
     let x = this.letterToCol(startCell.position[0]);
     let y = parseInt(startCell.position[1]);
 
-    while (x !== newXPos && y !== newYPos) {
+    while (x !== newXPos || y !== newYPos) {
       if (x < newXPos && y === newYPos) {
         x++;
       } else if (x > newXPos && y === newYPos) {
@@ -146,9 +151,12 @@ export class Piece {
         x--;
         y++;
       }
-      // else if (x === newXPos && y === newYPos) {
-      //   break;
-      // }
+      
+      if (x === newXPos && y === newYPos && !newCell.isValid() && this.color !== newCell.getValue()?.getColor()) {
+        console.log("can replace piece");
+        this.removePiece(newCell);
+        return true;
+      }
 
       path.push(`${`${this.colToLetter(x)}${y}`}`);
       console.log(path);
@@ -160,6 +168,13 @@ export class Piece {
     }
     console.log("path is clear");
     return true;
+  }
+
+  removePiece(newCell) {
+    const cell = newCell;
+    const piece = cell.getValue();
+    cell.cellEl.removeChild(piece.pieceEl);
+    return piece;
   }
 
   isSameOrShorterMove(moveSet, move) {

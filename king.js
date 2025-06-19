@@ -13,6 +13,8 @@ export class King extends Piece {
       [-1, -1],
       [0, -1]
     ];
+    this.isChecked === false;
+    this.isCheckMated == false;
   }
 
   createElement() {

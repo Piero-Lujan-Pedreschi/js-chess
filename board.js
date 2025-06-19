@@ -47,12 +47,20 @@ export class Board {
   }
 
   setBoard() {
-    for (let i = 0; i < 2; i++) {
-      const cell = this.cells[i];
-      const piece = new King(this.game, cell);
+    for (let i = 0; i < 4; i++) {
+      let cellPos = i;
+      if (i > 1) {
+        cellPos = this.cells.length - i;
+      } else {
+        cellPos = i;
+      }
+
+      const cell = this.cells[cellPos];
+      
+      const piece = new Queen(this.game, cell);
       cell.cellEl.appendChild(piece.pieceEl);
       cell.setValue(piece);
-      if (i == 0) {
+      if (i % 2 == 0) {
         piece.assignColor("white");
         console.log('white');
       } else {

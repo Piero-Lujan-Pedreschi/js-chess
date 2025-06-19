@@ -49,3 +49,7 @@
 .black {
     background: black;
 }
+
+.game-screen {
+    display: flex;
+}
