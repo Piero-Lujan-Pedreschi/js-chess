@@ -63,7 +63,7 @@ export class Cell {
 
     handleClick() {
         if (this.game.pieceSelected) {
-            this.game.pieceSelected.movePiece(this);
+            this.game.pieceSelected.checkMovePiece(this);
         } 
     }
 }

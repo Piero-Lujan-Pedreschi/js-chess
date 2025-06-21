@@ -20,7 +20,7 @@ export class Knight extends Piece {
     this.pieceEl.classList.add("knight"); // add specific class
   }
 
-  movePiece(newCell) {
+  checkMovePiece(newCell) {
     const xf = this.letterToCol(newCell.position[0]);
     const yf = parseInt(newCell.position[1]);
 
@@ -46,20 +46,7 @@ export class Knight extends Piece {
       if (this.moveCount === 1) {
         this.onFirstMove?.();
       }
-      console.log(`piece can move to ${newCell.position}`);
-      const cell = newCell;
-      const parentCellEl = this.pieceEl.parentNode;
-      parentCellEl.cellObj.setValid();
-      parentCellEl.style.backgroundColor = "";
-      parentCellEl.removeChild(this.pieceEl);
-
-      cell.cellEl.appendChild(this.pieceEl);
-      cell.setValue(this);
-      this.game.pieceSelected = null;
-      this.currentCell = cell;
-      this.setLocation(cell.position);
-      this.selectPiece();
-      this.game.onMoveComplete();
+      this.movePiece(newCell, oldCell)
       return true;
     } else {
       console.log("select an allowed cell");
@@ -78,56 +65,11 @@ export class Knight extends Piece {
     let x = this.letterToCol(startCell.position[0]);
     let y = parseInt(startCell.position[1]);
 
-    // while (x !== newXPos || y !== newYPos) {
-    //   if (x < newXPos && y === newYPos) {
-    //     x++;
-    //   } else if (x > newXPos && y === newYPos) {
-    //     x--;
-    //   } else if (x < newXPos && y < newYPos) {
-    //     x++;
-    //     y++;
-    //   } else if (x < newXPos && y > newYPos) {
-    //     x++;
-    //     y--;
-    //   } else if (x === newXPos && y < newYPos) {
-    //     y++;
-    //   } else if (x === newXPos && y > newYPos) {
-    //     y--;
-    //   } else if (x > newXPos && y > newYPos) {
-    //     x--;
-    //     y--;
-    //   } else if (x > newXPos && y < newYPos) {
-    //     x--;
-    //     y++;
-    //   }
-
-    //   if (x === newXPos && y === newYPos) break;
-
-    //   path.push(`${`${this.colToLetter(x)}${y}`}`);
-    //   console.log(path);
-    //   // console.log(`cell ${`${colToLetter(x)}${y}`} is along path`);
-    //   if (
-    //     !this.game.chessBoard.getCell(`${this.colToLetter(x)}${y}`).isValid()
-    //   ) {
-    //     console.log(`path is not clear to ${newCell.position}`);
-    //     return false;
-    //   }
-    // }
-
     const targetPiece = newCell.getValue();
     console.log(`piece on target = `);
     console.log(targetPiece);
     if (targetPiece && targetPiece.getColor() !== this.color) {
-      console.log("can replace piece");
-      const capturedPiece = this.removePiece(newCell);
-      if (capturedPiece) {
-        (this.color === "white"
-          ? this.game.whiteTakenPieces
-          : this.game.blackTakenPieces
-        ).push(capturedPiece);
-        console.log(`white taken pieces: ${this.game.whiteTakenPieces}`);
-        console.log(`black taken pieces: ${this.game.blackTakenPieces}`);
-      }
+      this.capturePiece(newCell);
     } else if (targetPiece && targetPiece.getColor() === this.color) {
       console.log("cannot capture piece of same color");
       return false;

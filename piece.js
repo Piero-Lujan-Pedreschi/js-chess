@@ -72,7 +72,7 @@ export class Piece {
     }
   }
 
-  movePiece(newCell) {
+  checkMovePiece(newCell) {
     const xf = this.letterToCol(newCell.position[0]);
     const yf = parseInt(newCell.position[1]);
 
@@ -95,30 +95,31 @@ export class Piece {
     if (isLegal && this.isPathClear(newCell, move)) {
       this.moveCount++;
 
-      if (this.moveCount === 1) {
-        this.onFirstMove?.();
-      }
+      if (this.moveCount === 1) {this.onFirstMove?.();}
 
-      console.log(`piece can move to ${newCell.position}`);
-      const cell = newCell;
-      const parentCellEl = this.pieceEl.parentNode;
-
-      parentCellEl.style.backgroundColor = '';
-      parentCellEl.cellObj.setValid();
-      parentCellEl.removeChild(this.pieceEl);
-
-      cell.cellEl.appendChild(this.pieceEl);
-      cell.setValue(this);
-      this.game.pieceSelected = null;
-      this.currentCell = cell;
-      this.setLocation(cell.position);
-      this.selectPiece();
-      this.game.onMoveComplete();
+      this.movePiece(newCell, oldCell);
       return true;
     } else {
       console.log("select an allowed cell");
       return false;
     }
+  }
+
+  movePiece(newCell, oldCell) {
+    console.log(`piece can move to ${newCell.position}`);
+    const cell = newCell;
+
+    oldCell.cellEl.style.backgroundColor = "";
+    oldCell.setValid();
+    oldCell.cellEl.removeChild(this.pieceEl);
+
+    cell.cellEl.appendChild(this.pieceEl);
+    cell.setValue(this);
+    this.game.pieceSelected = null;
+    this.currentCell = cell;
+    this.setLocation(cell.position);
+    this.selectPiece();
+    this.game.onMoveComplete();
   }
 
   isPathClear(newCell) {
@@ -160,7 +161,12 @@ export class Piece {
       path.push(`${`${this.colToLetter(x)}${y}`}`);
       console.log(path);
       // console.log(`cell ${`${colToLetter(x)}${y}`} is along path`);
-      if (!this.game.chessBoard.getCell(`${this.colToLetter(x)}${y}`).isValid()) {
+
+      const cellValid = this.game.chessBoard
+        .getCell(`${this.colToLetter(x)}${y}`)
+        .isValid();
+
+      if (!cellValid) {
         console.log(`path is not clear to ${newCell.position}`);
         return false;
       }
@@ -170,17 +176,7 @@ export class Piece {
     console.log(`piece on target = `);
     console.log(targetPiece);
     if (targetPiece && targetPiece.getColor() !== this.color) {
-      console.log("can replace piece");
-        const capturedPiece = this.removePiece(newCell);
-        if (capturedPiece) {
-          (this.color === "white"
-            ? this.game.whiteTakenPieces
-            : this.game.blackTakenPieces
-          ).push(capturedPiece);
-          console.log(`white taken pieces: ${this.game.whiteTakenPieces}`);
-          console.log(`black taken pieces: ${this.game.blackTakenPieces}`);
-        } 
-        
+      this.capturePiece(newCell);
     } else if (targetPiece && targetPiece.getColor() === this.color) {
       console.log('cannot capture piece of same color');
       return false;
@@ -188,6 +184,19 @@ export class Piece {
 
     console.log("path is clear");
     return true;
+  }
+
+  capturePiece(newCell) {
+    console.log("can replace piece");
+    const capturedPiece = this.removePiece(newCell);
+    if (capturedPiece) {
+      (this.color === "white"
+        ? this.game.whiteTakenPieces
+        : this.game.blackTakenPieces
+      ).push(capturedPiece);
+      console.log(`white taken pieces: ${this.game.whiteTakenPieces}`);
+      console.log(`black taken pieces: ${this.game.blackTakenPieces}`);
+    } 
   }
 
   removePiece(newCell) {
@@ -205,12 +214,10 @@ export class Piece {
     const [dxSet, dySet] = moveSet;
     const [dx, dy] = move;
 
-    // Make sure direction is the same
     const sameDirection =
       (dxSet === 0 ? dx === 0 : Math.sign(dx) === Math.sign(dxSet)) &&
       (dySet === 0 ? dy === 0 : Math.sign(dy) === Math.sign(dySet));
 
-    // Magnitude check
     const withinBounds =
       Math.abs(dx) <= Math.abs(dxSet) && Math.abs(dy) <= Math.abs(dySet);
 
