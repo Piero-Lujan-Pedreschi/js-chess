@@ -18,11 +18,14 @@ export class Cell {
 
     setValid() {
         this.valid = true;
+        this.isValidText.textContent = `isValid${this.isValid()}`;
+        this.value = null;
         // console.log(`${this.position} is now valid`);
     }
 
     setInvalid() {
         this.valid = false;
+        this.isValidText.textContent = `isValid${this.isValid()}`;
         // console.log(`${this.position} is now invalid`);
     }
 
@@ -39,10 +42,6 @@ export class Cell {
         return this.value;
     }
 
-    // removeValue() {
-
-    // }
-
     getPosition() {
         return this.position;
     }
@@ -52,7 +51,11 @@ export class Cell {
         this.cellEl = document.createElement("div");
         this.cellEl.setAttribute("class", "cell");
         this.cellEl.setAttribute('id', this.position);
-        this.cellEl.textContent = `${this.position}`;
+        this.positionText = document.createElement("p");
+        this.cellEl.appendChild(this.positionText);
+        this.positionText.textContent = `${this.position}`;
+        this.isValidText = document.createElement("p");
+        this.cellEl.appendChild(this.isValidText);
         this.cellEl.cellObj = this;
         this.cellEl.addEventListener('click', () => this.handleClick());
         // console.log(this.cellEl);

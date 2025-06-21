@@ -52,17 +52,18 @@ export class Piece {
   }
 
   selectPiece() {
+    const cellEl = this.pieceEl.parentNode;
     if (this.game.playerTurn == this.color) {
       this.selected = !this.selected;
       // console.log(this.selected);
       if (this.selected) {
-        this.pieceEl.style.borderColor = "green";
+        cellEl.style.backgroundColor = "rgba(142, 240, 56, 0.41)"; 
         // console.log('piece has been selected');
         this.game.pieceSelected = this;
         // console.log(this.game.pieceSelected);
       } else {
-        this.pieceEl.style.borderColor = "red";
         // console.log("piece has been unselected");
+        cellEl.style.backgroundColor = '';
         this.game.pieceSelected = null;
         // console.log(this.game.pieceSelected);
       }
@@ -101,6 +102,8 @@ export class Piece {
       console.log(`piece can move to ${newCell.position}`);
       const cell = newCell;
       const parentCellEl = this.pieceEl.parentNode;
+
+      parentCellEl.style.backgroundColor = '';
       parentCellEl.cellObj.setValid();
       parentCellEl.removeChild(this.pieceEl);
 
@@ -164,6 +167,8 @@ export class Piece {
     }
 
     const targetPiece = newCell.getValue();
+    console.log(`piece on target = `);
+    console.log(targetPiece);
     if (targetPiece && targetPiece.getColor() !== this.color) {
       console.log("can replace piece");
         const capturedPiece = this.removePiece(newCell);

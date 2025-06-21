@@ -17,24 +17,24 @@ export class Board {
     this.board.height = 800;
     this.cellSize = this.board.width / 8;
 
-    this.cells = [];
+    this.cells = Array.from({ length: 8 }, () => Array(8).fill(null));
     this.drawBoard();
     this.setBoard();
   }
 
   drawBoard() {
     this.square = this.board.getContext("2d");
-    for (let r = 1; r <= 8; r++) {
-      for (let c = 1; c <= 8; c++) {
-        const col = colToLetter(c);
-        const row = r;
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        const col = colToLetter(c + 1);
+        const row = 8 - r;
 
         const cell = new Cell(col, row, this.game);
-        this.cells.push(cell);
+        this.cells[r][c] = (cell);
         this.overlay.appendChild(cell.cellEl);
 
-        const x = (c - 1) * this.cellSize;
-        const y = (r - 1) * this.cellSize;
+        const x = (c) * this.cellSize;
+        const y = (r) * this.cellSize;
 
         cell.cellEl.style.left = `${x}px`;
         cell.cellEl.style.top = `${y}px`;
@@ -47,34 +47,63 @@ export class Board {
   }
 
   setBoard() {
-    for (let i = 0; i < 4; i++) {
-      let cellPos = i;
-      if (i > 1) {
-        cellPos = this.cells.length - i;
-      } else {
-        cellPos = i;
-      }
 
-      const cell = this.cells[cellPos];
-      
-      const piece = new Queen(this.game, cell);
-      cell.cellEl.appendChild(piece.pieceEl);
-      cell.setValue(piece);
-      if (i % 2 == 0) {
-        piece.assignColor("white");
-        console.log('white');
-      } else {
+    for (let i = 0; i < 2; i++) {
+      for (let j = 0; j < 8; j++) {
+        const cell = this.cells[i][j];
+        let piece;
+        if (i == 0 && (j == 0 || j == 7)) {
+          piece = new Rook(this.game, cell);
+        } else if (i == 0 && (j == 1 || j == 6)) {
+          piece = new Knight(this.game, cell);
+        } else if (i == 0 && (j == 2 || j == 5)) {
+          piece = new Bishop(this.game, cell);
+        } else if (i == 0 && j == 3) {
+          piece = new King(this.game, cell);
+        } else if (i == 0 && j == 4) {
+          piece = new Queen(this.game, cell);
+        } else if (i == 1) {
+          piece = new Pawn(this.game, cell);
+        }
+
+        cell.cellEl.appendChild(piece.pieceEl);
+        cell.setValue(piece);
         piece.assignColor("black");
-        console.log('black')
+      }
+    }
+
+    for (let i = 6; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
+        const cell = this.cells[i][j];
+        let piece;
+        if (i == 7 && (j == 0 || j == 7)) {
+          piece = new Rook(this.game, cell);
+        } else if (i == 7 && (j == 1 || j == 6)) {
+          piece = new Knight(this.game, cell);
+        } else if (i == 7 && (j == 2 || j == 5)) {
+          piece = new Bishop(this.game, cell);
+        } else if (i == 7 && j == 4) {
+          piece = new King(this.game, cell);
+        } else if (i == 7 && j == 3) {
+          piece = new Queen(this.game, cell);
+        } else if (i == 6) {
+          piece = new Pawn(this.game, cell);
+        }
+
+        cell.cellEl.appendChild(piece.pieceEl);
+        cell.setValue(piece);
+        piece.assignColor("white");
       }
     }
   }
 
   getCell(position) {
-    for (const cell of this.cells) {
-        if (cell.position == position) {
-            return cell;
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
+        if (this.cells[i][j].position == position) {
+          return this.cells[i][j];
         }
+      }      
     }
   }
 }

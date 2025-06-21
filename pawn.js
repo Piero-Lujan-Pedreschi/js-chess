@@ -3,27 +3,50 @@ import {Piece} from './piece.js';
 export class Pawn extends Piece {
   constructor(game, loc) {
     super(game, loc);
-    this.moveSet = [
-      [0, 1],
-      [0, 2],
-    ];
-    this.killMoveSet = this.assignKM(this.color);
+    this.captureMoveSet;
   }
 
   onFirstMove() {
     this.moveSet.pop();
   }
 
-  assignKM(color) {
-    if (color == 'white') {
-      return [[1, 1], [-1, 1]];
+  assignColor(color) {
+    this.color = color;
+    if (this.color == "white") {
+      this.pieceEl.classList.add("white");
+      this.game.addWhitePiece(this);
+      this.assignMoves(color);
     } else {
-      return [[1, -1], [-1, -1]];
+      this.pieceEl.classList.add("black");
+      this.game.addBlackPiece(this);
+      this.assignMoves(color);
+    }
+  }
+
+  assignMoves(color) {
+    if (color == "black") {
+      this.moveSet = [
+        [0, -1],
+        [0, -2],
+      ];
+      this.captureMoveSet = [
+        [1, 1],
+        [-1, 1],
+      ];
+    } else {
+      this.moveSet = [
+        [0, 1],
+        [0, 2],
+      ];
+      this.captureMoveSet = [
+        [1, 1],
+        [-1, 1],
+      ];
     }
   }
 
   createElement() {
     super.createElement();
-    this.pieceEl.classList.add("pawn"); 
+    this.pieceEl.classList.add("pawn");
   }
 }
