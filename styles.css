@@ -1,6 +1,6 @@
 #board {
     position: absolute;
-    border: black 2px solid;
+    /* border: black 2px solid; */
     z-index: 0;
 }
 
@@ -31,8 +31,8 @@
     box-sizing: border-box;
     /* border: 1px solid black; */
     pointer-events: auto;
-    user-select: none;       /* prevent text selection */
-    outline: none;           /* remove focus outline */
+    user-select: none;  
+    outline: none;     
     caret-color: transparent;
     display: flex;
     flex-wrap: wrap;

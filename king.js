@@ -26,13 +26,11 @@ export class King extends Piece {
     const [dxSet, dySet] = moveSet;
     const [dx, dy] = move;
 
-    // Make sure direction is the same
     const sameDirection =
       (dxSet === 0 ? dx === 0 : Math.sign(dx) === Math.sign(dxSet)) &&
       (dySet === 0 ? dy === 0 : Math.sign(dy) === Math.sign(dySet)) &&
       (Math.abs(dx) === Math.abs(dy) || dx === 0 || dy === 0);
 
-    // Magnitude check
     const withinBounds =
       Math.abs(dx) <= Math.abs(dxSet) && Math.abs(dy) <= Math.abs(dySet);
 

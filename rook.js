@@ -12,7 +12,7 @@ export class Rook extends Piece {
   }
 
   createElement() {
-    super.createElement(); // call base setup
-    this.pieceEl.classList.add("rook"); // add specific class
+    super.createElement();
+    this.pieceEl.classList.add("rook");
   }
 }
