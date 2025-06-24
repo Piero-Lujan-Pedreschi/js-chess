@@ -1,4 +1,8 @@
 import {Piece} from './piece.js';
+import { Rook } from "./rook.js";
+import { Bishop } from "./bishop.js";
+import { Knight } from "./knight.js";
+import { Queen } from "./queen.js";
 
 export class Pawn extends Piece {
   constructor(game, loc) {
@@ -79,6 +83,11 @@ export class Pawn extends Piece {
 
       if (this.moveCount === 1) {
         this.onFirstMove?.();
+      }
+
+      if (yf == 1 || yf == 8) {
+        this.promotion(newCell, oldCell);
+        return true;
       }
 
       this.movePiece(newCell, oldCell);
@@ -162,5 +171,26 @@ export class Pawn extends Piece {
 
     console.log("path is clear");
     return true;
+  }
+
+  promotion(newCell, oldCell) {
+    console.log(`pawn can be promoted at ${newCell.position}`);
+    const cell = newCell;
+    const newPiece = new Queen(this.game, newCell);
+
+    oldCell.cellEl.style.backgroundColor = "";
+    oldCell.setValid();
+    oldCell.cellEl.removeChild(this.pieceEl);
+    const idxPiece = this.game.whitePieces.indexOf(this);
+    this.game.whitePieces.splice(idxPiece, 1);
+
+    cell.cellEl.appendChild(newPiece.pieceEl);
+    newPiece.assignColor(this.color);
+    cell.setValue(newPiece);
+    this.game.pieceSelected = null;
+    newPiece.currentCell = cell;
+    newPiece.setLocation(cell.position);
+    newPiece.game.onMoveComplete();
+
   }
 }
