@@ -47,7 +47,6 @@ export class Board {
   }
 
   setBoard() {
-
     for (let i = 0; i < 2; i++) {
       for (let j = 0; j < 8; j++) {
         const cell = this.cells[i][j];
@@ -58,9 +57,9 @@ export class Board {
           piece = new Knight(this.game, cell);
         } else if (i == 0 && (j == 2 || j == 5)) {
           piece = new Bishop(this.game, cell);
-        } else if (i == 0 && j == 3) {
-          piece = new King(this.game, cell);
         } else if (i == 0 && j == 4) {
+          piece = new King(this.game, cell);
+        } else if (i == 0 && j == 3) {
           piece = new Queen(this.game, cell);
         } else if (i == 1) {
           piece = new Pawn(this.game, cell);

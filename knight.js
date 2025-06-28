@@ -78,4 +78,5 @@ export class Knight extends Piece {
     console.log("path is clear");
     return true;
   }
+
 }

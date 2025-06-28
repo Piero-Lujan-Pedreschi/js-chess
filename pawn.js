@@ -19,12 +19,11 @@ export class Pawn extends Piece {
     if (this.color == "white") {
       this.pieceEl.classList.add("white");
       this.game.addWhitePiece(this);
-      this.assignMoves(color);
     } else {
       this.pieceEl.classList.add("black");
       this.game.addBlackPiece(this);
-      this.assignMoves(color);
     }
+    this.assignMoves(color);
   }
 
   assignMoves(color) {
@@ -93,6 +92,7 @@ export class Pawn extends Piece {
       this.movePiece(newCell, oldCell);
       return true;
     } else if (isCaptureLegal && this.isCaptureClear(newCell)) {
+      this.moveCount++;
       this.movePiece(newCell, oldCell);
     } else {
       console.log("select an allowed cell");

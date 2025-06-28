@@ -26,6 +26,10 @@ export class Piece {
     return this.color;
   }
 
+  getMoveCount() {
+    return this.moveCount;
+  }
+
   createElement() {
     this.pieceEl = document.createElement("div");
     this.pieceEl.setAttribute("class", "piece");
@@ -57,13 +61,13 @@ export class Piece {
       this.selected = !this.selected;
       // console.log(this.selected);
       if (this.selected) {
-        cellEl.style.backgroundColor = "rgba(142, 240, 56, 0.41)"; 
+        cellEl.style.backgroundColor = "rgba(142, 240, 56, 0.41)";
         // console.log('piece has been selected');
         this.game.pieceSelected = this;
         // console.log(this.game.pieceSelected);
       } else {
         // console.log("piece has been unselected");
-        cellEl.style.backgroundColor = '';
+        cellEl.style.backgroundColor = "";
         this.game.pieceSelected = null;
         // console.log(this.game.pieceSelected);
       }
@@ -95,7 +99,9 @@ export class Piece {
     if (isLegal && this.isPathClear(newCell, move)) {
       this.moveCount++;
 
-      if (this.moveCount === 1) {this.onFirstMove?.();}
+      if (this.moveCount === 1) {
+        this.onFirstMove?.();
+      }
 
       this.movePiece(newCell, oldCell);
       return true;
@@ -178,7 +184,7 @@ export class Piece {
     if (targetPiece && targetPiece.getColor() !== this.color) {
       this.capturePiece(newCell);
     } else if (targetPiece && targetPiece.getColor() === this.color) {
-      console.log('cannot capture piece of same color');
+      console.log("cannot capture piece of same color");
       return false;
     }
 
@@ -196,13 +202,13 @@ export class Piece {
       ).push(capturedPiece);
       console.log(`white taken pieces: ${this.game.whiteTakenPieces}`);
       console.log(`black taken pieces: ${this.game.blackTakenPieces}`);
-    } 
+    }
   }
 
   removePiece(newCell) {
     const piece = newCell.getValue();
     if (!piece) {
-      return null
+      return null;
     }
 
     newCell.cellEl.removeChild(piece.pieceEl);
