@@ -315,6 +315,7 @@ export class Piece {
       // Push to taken list
       takenArray.push(capturedPiece);
 
+      
       console.log(`white taken pieces:`, this.game.whiteTakenPieces);
       console.log(`black taken pieces:`, this.game.blackTakenPieces);
     }

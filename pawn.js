@@ -87,6 +87,7 @@ export class Pawn extends Piece {
       }
 
       if (yf == 1 || yf == 8) {
+        console.log("promoting and moving");
         this.promotion(newCell, oldCell);
         return true;
       }
@@ -95,6 +96,13 @@ export class Pawn extends Piece {
       return true;
     } else if (isCaptureLegal && this.isCaptureClear(newCell)) {
       this.moveCount++;
+
+      if (yf == 1 || yf == 8) {
+        console.log("promoting and capturing");
+        this.promotion(newCell, oldCell);
+        return true;
+      }
+
       this.movePiece(newCell, oldCell);
     } else {
       console.log("select an allowed cell");
@@ -234,7 +242,9 @@ export class Pawn extends Piece {
       console.log("must capture a piece");
       return false;
     } else if (targetPiece && targetPiece.getColor() !== this.color) {
+      console.log("capturing");
       this.capturePiece(newCell);
+      return true;
     } else if (targetPiece && targetPiece.getColor() === this.color) {
       console.log("cannot capture piece of same color");
       return false;
