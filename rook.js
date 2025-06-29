@@ -9,6 +9,8 @@ export class Rook extends Piece {
       [8, 0], 
       [-8, 0]
     ];
+    
+    // this.checkAllPaths(this.moveSet);
   }
 
   createElement() {

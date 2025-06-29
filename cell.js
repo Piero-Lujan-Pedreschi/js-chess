@@ -63,6 +63,14 @@ export class Cell {
 
     }
 
+    highlight() {
+        this.cellEl.style.backgroundColor = "rgba(142, 240, 56, 0.41)";
+    }
+
+    unhighlight() {
+        this.cellEl.style.backgroundColor = "";
+    }
+
     handleClick() {
         if (this.game.pieceSelected) {
             this.game.pieceSelected.checkMovePiece(this);

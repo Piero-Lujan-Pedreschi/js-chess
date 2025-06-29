@@ -9,6 +9,7 @@ class Game {
     this.blackTakenPieces = [];
     this.array = [];
     this.chessBoard = new Board(this);
+    this.chessBoard.setBoard();
     this.pieceSelected = null;
     this.moveComplete = false;
     this.resolveTurn = null;

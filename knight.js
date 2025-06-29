@@ -13,6 +13,8 @@ export class Knight extends Piece {
       [-2, 1],
       [-2, -1],
     ];
+
+    // this.checkAllPaths(this.moveSet);
   }
 
   createElement() {
@@ -46,11 +48,44 @@ export class Knight extends Piece {
       if (this.moveCount === 1) {
         this.onFirstMove?.();
       }
-      this.movePiece(newCell, oldCell)
+      this.movePiece(newCell, oldCell);
       return true;
     } else {
       console.log("select an allowed cell");
       return false;
+    }
+  }
+
+  checkAllPaths() {
+    this.possibleMoves.length = 0;
+    for (const move of this.moveSet) {
+      // console.log(`checking path for move: ${move}`);
+      const startCell = this.pieceEl.parentElement.cellObj;
+
+      let x = this.letterToCol(startCell.position[0]);
+      let y = parseInt(startCell.position[1]);
+
+      const dx = this.letterToCol(startCell.position[0]) + move[0];
+      // console.log(`dx: ${dx}`);
+      const dy = parseInt(startCell.position[1]) + move[1];
+      // console.log(`dy: ${dy}`);
+
+      if (dx > 8 || dy > 8 || dx < 1 || dy < 1) {
+        // console.log("out of range");
+        continue;
+      }
+
+      const destCell = this.game.chessBoard.getCell(
+        `${this.colToLetter(dx)}${dy}`
+      );
+
+      if (destCell.isValid() || destCell.getValue().getColor() !== this.color) {
+        // console.log("highlighting");
+        // destCell.highlight();
+        this.possibleMoves.push(destCell);
+      }
+      // console.log("next move");
+
     }
   }
 
@@ -78,5 +113,4 @@ export class Knight extends Piece {
     console.log("path is clear");
     return true;
   }
-
 }

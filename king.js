@@ -17,6 +17,8 @@ export class King extends Piece {
     ];
     this.isChecked === false;
     this.isCheckMated == false;
+
+    // this.checkAllPaths(this.moveSet);
   }
 
   createElement() {
@@ -26,7 +28,7 @@ export class King extends Piece {
 
 
   onFirstMove() {
-    this.moveSet.pop();
+    return this.moveSet.pop();
   }
 
   checkMovePiece(newCell) {
@@ -53,11 +55,14 @@ export class King extends Piece {
       this.moveCount++;
 
       if (this.moveCount === 1) {
-        var rook = this.checkCastle(xf, yf);
-        this.onFirstMove?.();
-        this.castle(newCell, oldCell, rook);
-        console.log("castle complete");
-        return true;
+        
+        const castleMove = this.onFirstMove?.();
+        if (castleMove[0] == move[0] && castleMove[1] == move[1]) {
+          var rook = this.checkCastle(xf, yf);
+          this.castle(newCell, oldCell, rook);
+          console.log("castle complete");
+          return true;
+        }
       }
       this.movePiece(newCell, oldCell);
       return true;

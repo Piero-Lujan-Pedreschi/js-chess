@@ -8,6 +8,8 @@ export class Pawn extends Piece {
   constructor(game, loc) {
     super(game, loc);
     this.captureMoveSet;
+
+    // this.checkAllPaths();
   }
 
   onFirstMove() {
@@ -18,10 +20,10 @@ export class Pawn extends Piece {
     this.color = color;
     if (this.color == "white") {
       this.pieceEl.classList.add("white");
-      this.game.addWhitePiece(this);
+      // this.game.addWhitePiece(this);
     } else {
       this.pieceEl.classList.add("black");
-      this.game.addBlackPiece(this);
+      // this.game.addBlackPiece(this);
     }
     this.assignMoves(color);
   }
@@ -100,6 +102,75 @@ export class Pawn extends Piece {
     }
   }
 
+  checkAllPaths() {
+    this.possibleMoves.length = 0;
+    for (const move of [...this.moveSet, ...this.captureMoveSet]) {
+      // console.log(`checking path for move: ${move}`);
+      const startCell = this.pieceEl.parentElement.cellObj;
+
+      let x = this.letterToCol(startCell.position[0]);
+      let y = parseInt(startCell.position[1]);
+
+      const dx = this.letterToCol(startCell.position[0]) + move[0];
+      // console.log(`dx: ${dx}`);
+      const dy = parseInt(startCell.position[1]) + move[1];
+      // console.log(`dy: ${dy}`);
+
+      let currentCell;
+
+      while (x !== dx || y !== dy) {
+        if (x < dx && y === dy) {
+          x++;
+        } else if (x > dx && y === dy) {
+          x--;
+        } else if (x < dx && y < dy) {
+          x++;
+          y++;
+        } else if (x < dx && y > dy) {
+          x++;
+          y--;
+        } else if (x === dx && y < dy) {
+          y++;
+        } else if (x === dx && y > dy) {
+          y--;
+        } else if (x > dx && y > dy) {
+          x--;
+          y--;
+        } else if (x > dx && y < dy) {
+          x--;
+          y++;
+        }
+
+        if (x > 8 || y > 8 || x < 1 || y < 1) {
+          break;
+        }
+
+        // console.log(`x: ${x}\ny: ${y}`);
+        currentCell = this.game.chessBoard.getCell(
+          `${this.colToLetter(x)}${y}`
+        );
+
+        // console.log(currentCell.isValid());
+        if (!currentCell.isValid()) {
+          // console.log("cell ahead")
+          // console.log(this.captureMoveSet.includes(move));
+          if (this.captureMoveSet.includes(move) && currentCell.getValue().getColor() !== this.color) {
+            // console.log("adding to list");
+            this.possibleMoves.push(currentCell);
+          } 
+          break;
+        } else if (currentCell.isValid()) {
+          if (this.moveSet.includes(move)) {
+            this.possibleMoves.push(currentCell);
+          }
+        } else {
+          break;
+        }
+      }
+    }
+    // console.log(this.possibleMoves);
+  }
+
   isPathClear(newCell) {
     const path = [];
 
@@ -162,7 +233,7 @@ export class Pawn extends Piece {
     if (targetPiece == null) {
       console.log("must capture a piece");
       return false;
-    } else if(targetPiece && targetPiece.getColor() !== this.color) {
+    } else if (targetPiece && targetPiece.getColor() !== this.color) {
       this.capturePiece(newCell);
     } else if (targetPiece && targetPiece.getColor() === this.color) {
       console.log("cannot capture piece of same color");
@@ -177,20 +248,24 @@ export class Pawn extends Piece {
     console.log(`pawn can be promoted at ${newCell.position}`);
     const cell = newCell;
     const newPiece = new Queen(this.game, newCell);
+    this.selectPiece();
 
     oldCell.cellEl.style.backgroundColor = "";
     oldCell.setValid();
     oldCell.cellEl.removeChild(this.pieceEl);
-    const idxPiece = this.game.whitePieces.indexOf(this);
-    this.game.whitePieces.splice(idxPiece, 1);
+    let idxPiece;
+    this.color == "white" ? idxPiece = this.game.whitePieces.indexOf(this) : idxPiece = this.game.blackPieces.indexOf(this);
+
+    this.color == "white" ? this.game.whitePieces.splice(idxPiece, 1) : this.game.blackPieces.splice(idxPiece, 1);
 
     cell.cellEl.appendChild(newPiece.pieceEl);
     newPiece.assignColor(this.color);
     cell.setValue(newPiece);
+    cell.cellEl.style.backgroundColor = "";
     this.game.pieceSelected = null;
     newPiece.currentCell = cell;
     newPiece.setLocation(cell.position);
+    this.updateAllPaths();
     newPiece.game.onMoveComplete();
-
   }
 }

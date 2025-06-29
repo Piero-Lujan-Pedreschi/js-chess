@@ -1,3 +1,5 @@
+
+
 export class Piece {
   constructor(game, cell) {
     this.currentCell = cell;
@@ -9,16 +11,18 @@ export class Piece {
     this.selected = false;
     this.moveCount = 0;
     this.game = game;
+    // this.checkAllPaths();
+    this.possibleMoves = [];
   }
 
   assignColor(color) {
     this.color = color;
     if (this.color == "white") {
       this.pieceEl.classList.add("white");
-      this.game.addWhitePiece(this);
+      // this.game.addWhitePiece(this);
     } else {
       this.pieceEl.classList.add("black");
-      this.game.addBlackPiece(this);
+      // this.game.addBlackPiece(this);
     }
   }
 
@@ -65,10 +69,13 @@ export class Piece {
         // console.log('piece has been selected');
         this.game.pieceSelected = this;
         // console.log(this.game.pieceSelected);
+        this.checkAllPaths();
+        this.highlightCells();
       } else {
         // console.log("piece has been unselected");
         cellEl.style.backgroundColor = "";
         this.game.pieceSelected = null;
+        this.unhighlightCells();
         // console.log(this.game.pieceSelected);
       }
     } else {
@@ -114,6 +121,7 @@ export class Piece {
   movePiece(newCell, oldCell) {
     console.log(`piece can move to ${newCell.position}`);
     const cell = newCell;
+    this.selectPiece();
 
     oldCell.cellEl.style.backgroundColor = "";
     oldCell.setValid();
@@ -124,8 +132,96 @@ export class Piece {
     this.game.pieceSelected = null;
     this.currentCell = cell;
     this.setLocation(cell.position);
-    this.selectPiece();
+    this.updateAllPaths();
     this.game.onMoveComplete();
+  }
+
+  updateAllPaths() {
+    for (const piece of this.game.whitePieces) {
+      // console.log(piece);
+      piece.checkAllPaths();
+    }
+    for (const piece of this.game.blackPieces) {
+      // console.log(piece);
+      piece.checkAllPaths();
+    }
+  }
+
+  checkAllPaths() {
+    this.possibleMoves.length = 0;
+    for (const move of this.moveSet) {
+      // console.log(`checking path for move: ${move}`);
+      const startCell = this.pieceEl.parentElement.cellObj;
+
+      let x = this.letterToCol(startCell.position[0]);
+      let y = parseInt(startCell.position[1]);
+
+      const dx = this.letterToCol(startCell.position[0]) + move[0];
+      // console.log(`dx: ${dx}`);
+      const dy = parseInt(startCell.position[1]) + move[1];
+      // console.log(`dy: ${dy}`);
+
+      let currentCell;
+
+      while (x !== dx || y !== dy) {
+        if (x < dx && y === dy) {
+          x++;
+        } else if (x > dx && y === dy) {
+          x--;
+        } else if (x < dx && y < dy) {
+          x++;
+          y++;
+        } else if (x < dx && y > dy) {
+          x++;
+          y--;
+        } else if (x === dx && y < dy) {
+          y++;
+        } else if (x === dx && y > dy) {
+          y--;
+        } else if (x > dx && y > dy) {
+          x--;
+          y--;
+        } else if (x > dx && y < dy) {
+          x--;
+          y++;
+        }
+
+        if (x > 8 || y > 8 || x < 1 || y < 1) {
+          break;
+        }
+
+        // console.log(`x: ${x}\ny: ${y}`);
+
+        currentCell = this.game.chessBoard.getCell(
+          `${this.colToLetter(x)}${y}`
+        );
+
+        // console.log(currentCell.isValid());
+        if (
+          !currentCell.isValid() &&
+          currentCell.getValue().getColor() !== this.color
+        ) {
+          this.possibleMoves.push(currentCell);
+          break;
+        } else if (currentCell.isValid()) {
+          this.possibleMoves.push(currentCell);
+        } else {
+          break;
+        }
+      }
+    }
+  }
+
+  highlightCells() {
+    for (const cell of this.possibleMoves) {
+      cell.highlight();
+    }
+  }
+
+  unhighlightCells() {
+    for (const cell of this.possibleMoves) {
+      cell.unhighlight();
+    }
   }
 
   isPathClear(newCell) {
@@ -192,16 +288,35 @@ export class Piece {
     return true;
   }
 
+  checkForCheck() {}
+
   capturePiece(newCell) {
     console.log("can replace piece");
+
     const capturedPiece = this.removePiece(newCell);
     if (capturedPiece) {
-      (this.color === "white"
+      const isWhite = this.color === "white";
+
+      // Remove from active pieces
+      const activeArray = isWhite
+        ? this.game.blackPieces
+        : this.game.whitePieces;
+
+      const takenArray = isWhite
         ? this.game.whiteTakenPieces
-        : this.game.blackTakenPieces
-      ).push(capturedPiece);
-      console.log(`white taken pieces: ${this.game.whiteTakenPieces}`);
-      console.log(`black taken pieces: ${this.game.blackTakenPieces}`);
+        : this.game.blackTakenPieces;
+
+      // Remove from active list
+      const index = activeArray.indexOf(capturedPiece);
+      if (index !== -1) {
+        activeArray.splice(index, 1);
+      }
+
+      // Push to taken list
+      takenArray.push(capturedPiece);
+
+      console.log(`white taken pieces:`, this.game.whiteTakenPieces);
+      console.log(`black taken pieces:`, this.game.blackTakenPieces);
     }
   }
 

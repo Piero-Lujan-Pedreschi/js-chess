@@ -13,6 +13,8 @@ export class Queen extends Piece {
       [-8, -8],
       [0, -8]
     ];
+
+    // this.checkAllPaths(this.moveSet);
   }
 
   createElement() {

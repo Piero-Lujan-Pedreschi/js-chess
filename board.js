@@ -8,7 +8,7 @@ import {Queen} from './queen.js';
 import {King} from './king.js';
 
 export class Board {
-  constructor(game, cellArray) {
+  constructor(game) {
     this.game = game;
 
     this.board = document.querySelector("#board");
@@ -19,7 +19,17 @@ export class Board {
 
     this.cells = Array.from({ length: 8 }, () => Array(8).fill(null));
     this.drawBoard();
-    this.setBoard();
+    // this.setBoard();
+  }
+
+  getCell(position) {
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
+        if (this.cells[i][j].position == position) {
+          return this.cells[i][j];
+        }
+      }
+    }
   }
 
   drawBoard() {
@@ -30,11 +40,11 @@ export class Board {
         const row = 8 - r;
 
         const cell = new Cell(col, row, this.game);
-        this.cells[r][c] = (cell);
+        this.cells[r][c] = cell;
         this.overlay.appendChild(cell.cellEl);
 
-        const x = (c) * this.cellSize;
-        const y = (r) * this.cellSize;
+        const x = c * this.cellSize;
+        const y = r * this.cellSize;
 
         cell.cellEl.style.left = `${x}px`;
         cell.cellEl.style.top = `${y}px`;
@@ -68,6 +78,7 @@ export class Board {
         cell.cellEl.appendChild(piece.pieceEl);
         cell.setValue(piece);
         piece.assignColor("black");
+        this.game.addBlackPiece(piece);
       }
     }
 
@@ -92,17 +103,12 @@ export class Board {
         cell.cellEl.appendChild(piece.pieceEl);
         cell.setValue(piece);
         piece.assignColor("white");
+        this.game.addWhitePiece(piece);
       }
     }
-  }
 
-  getCell(position) {
-    for (let i = 0; i < 8; i++) {
-      for (let j = 0; j < 8; j++) {
-        if (this.cells[i][j].position == position) {
-          return this.cells[i][j];
-        }
-      }      
+    for (const piece of [...this.game.whitePieces, ...this.game.blackPieces,]) {
+      piece.checkAllPaths();
     }
   }
 }
