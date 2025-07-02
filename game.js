@@ -31,7 +31,7 @@ class Game {
       console.log("player turn: ");
       console.log(this.playerTurn);
       await this.awaitTurn();
-      this.checkedKing = this.checkIfOpponentIsChecked(this.playerTurn);
+      this.checkedKing = this.checkIfOpponentIsChecked(this.playerTurn.getColor());
 
       if (this.checkedKing) {
         console.log(this.checkedKing);
