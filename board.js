@@ -6,6 +6,7 @@ import {Bishop} from './bishop.js';
 import {Knight} from './knight.js';
 import {Queen} from './queen.js';
 import {King} from './king.js';
+import {Player} from "./player.js";
 
 export class Board {
   constructor(game) {

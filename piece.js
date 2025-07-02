@@ -1,4 +1,4 @@
-
+import { Player } from "./player.js";
 
 export class Piece {
   constructor(game, cell) {
@@ -61,18 +61,18 @@ export class Piece {
 
   selectPiece() {
     const cellEl = this.pieceEl.parentNode;
-    if (this.game.playerTurn == this.color) {
+    if (this.game.playerTurn.getColor() == this.color) {
       this.selected = !this.selected;
       // console.log(this.selected);
       if (this.selected) {
         cellEl.style.backgroundColor = "rgba(142, 240, 56, 0.41)";
-        // console.log('piece has been selected');
+        console.log('piece has been selected');
         this.game.pieceSelected = this;
         // console.log(this.game.pieceSelected);
         this.checkAllPaths();
         this.highlightCells();
       } else {
-        // console.log("piece has been unselected");
+        console.log("piece has been unselected");
         cellEl.style.backgroundColor = "";
         this.game.pieceSelected = null;
         this.unhighlightCells();
@@ -197,10 +197,7 @@ export class Piece {
         );
 
         // console.log(currentCell.isValid());
-        if (
-          !currentCell.isValid() &&
-          currentCell.getValue().getColor() !== this.color
-        ) {
+        if (!currentCell.isValid()) {
           this.possibleMoves.push(currentCell);
           break;
         } else if (currentCell.isValid()) {
@@ -214,7 +211,9 @@ export class Piece {
 
   highlightCells() {
     for (const cell of this.possibleMoves) {
-      cell.highlight();
+      if (cell.isValid() || cell.getValue().getColor() !== this.color) {
+        cell.highlight();
+      } 
     }
   }
 
@@ -222,6 +221,30 @@ export class Piece {
     for (const cell of this.possibleMoves) {
       cell.unhighlight();
     }
+  }
+
+  checkIfOpponentIsChecked() {
+    let playerPieces;
+    let opponentKing;
+    this.color == "white"
+      ? (playerPieces = this.game.whitePieces)
+      : (playerPieces = this.game.blackPieces);
+    this.color == "white"
+      ? (opponentKing = this.game.blackPieces.find(
+          (piece) => piece instanceof King
+        ))
+      : (opponentKing = this.game.whitePieces.find(
+          (piece) => piece instanceof King
+        ));
+
+    for (const piece of playerPieces) {
+      for (const pathCell of piece.possibleMoves) {
+        if (pathCell.getValue() == opponentKing) {
+          return opponentKing;
+        }
+      }
+    }
+    return null;
   }
 
   isPathClear(newCell) {
@@ -315,7 +338,6 @@ export class Piece {
       // Push to taken list
       takenArray.push(capturedPiece);
 
-      
       console.log(`white taken pieces:`, this.game.whiteTakenPieces);
       console.log(`black taken pieces:`, this.game.blackTakenPieces);
     }

@@ -1,0 +1,64 @@
+#board {
+    position: absolute;
+    /* border: black 2px solid; */
+    z-index: 0;
+}
+
+.game-screen {
+    display: flex;
+}
+
+.chess-frame {
+    display: flex;
+    justify-content: center;
+    margin: auto;
+    z-index: 0;
+}
+
+#overlay {
+    position: absolute;
+    width: 800px;
+    height: 800px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.cell {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    z-index: 3;
+    box-sizing: border-box;
+    /* border: 1px solid black; */
+    pointer-events: auto;
+    user-select: none;  
+    outline: none;     
+    caret-color: transparent;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.piece {
+    width: 75px;
+    height: 75px;
+    z-index: 10;
+    background-image: url('Chess_Pieces_Sprite.svg.png');
+    background-repeat: no-repeat;
+    background-size: calc(2880px * 75 / 480) calc(960px * 75 / 480);
+}
+
+.white.king   { background-position:    0px    0px; }
+.white.queen  { background-position:  -75px    0px; }
+.white.bishop { background-position: -150px    0px; }
+.white.knight { background-position: -225px    0px; }
+.white.rook   { background-position: -300px    0px; }
+.white.pawn   { background-position: -375px    0px; }
+
+.black.king   { background-position:    0px  -75px; }
+.black.queen  { background-position:  -75px  -75px; }
+.black.bishop { background-position: -150px  -75px; }
+.black.knight { background-position: -225px  -75px; }
+.black.rook   { background-position: -300px  -75px; }
+.black.pawn   { background-position: -375px  -75px; }

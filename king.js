@@ -1,5 +1,6 @@
 import {Piece} from './piece.js';
 import {Rook} from './rook.js';
+import {Pawn} from './pawn.js';
 
 export class King extends Piece {
   constructor(game, loc) {
@@ -13,7 +14,7 @@ export class King extends Piece {
       [0, 1],
       [-1, -1],
       [0, -1],
-      [2, 0]
+      [2, 0],
     ];
     this.isChecked === false;
     this.isCheckMated == false;
@@ -25,7 +26,6 @@ export class King extends Piece {
     super.createElement();
     this.pieceEl.classList.add("king");
   }
-
 
   onFirstMove() {
     return this.moveSet.pop();
@@ -51,11 +51,14 @@ export class King extends Piece {
 
     console.log(`${move} is legal: ${isLegal}`);
 
-   if (isLegal && this.isPathClear(newCell, move)) {
+    if (
+      isLegal &&
+      this.isPathClear(newCell, move) &&
+      !this.isCheckingSelf(newCell)
+    ) {
       this.moveCount++;
 
       if (this.moveCount === 1) {
-        
         const castleMove = this.onFirstMove?.();
         if (castleMove[0] == move[0] && castleMove[1] == move[1]) {
           var rook = this.checkCastle(xf, yf);
@@ -75,6 +78,8 @@ export class King extends Piece {
   movePiece(newCell, oldCell) {
     console.log(`piece can move to ${newCell.position}`);
     const cell = newCell;
+    console.log("unselecting piece");
+    this.selectPiece();
 
     oldCell.cellEl.style.backgroundColor = "";
     oldCell.setValid();
@@ -85,7 +90,7 @@ export class King extends Piece {
     this.game.pieceSelected = null;
     this.currentCell = cell;
     this.setLocation(cell.position);
-    this.selectPiece();
+    this.updateAllPaths();
     this.game.onMoveComplete();
   }
 
@@ -133,8 +138,6 @@ export class King extends Piece {
         .getCell(`${this.colToLetter(x)}${y}`)
         .isValid();
 
-      
-
       if (!cellValid) {
         console.log(`path is not clear to ${newCell.position}`);
         return false;
@@ -150,7 +153,6 @@ export class King extends Piece {
       console.log("cannot capture piece of same color");
       return false;
     }
-
 
     console.log("path is clear");
     return true;
@@ -173,8 +175,8 @@ export class King extends Piece {
 
   checkCastle(x, y) {
     let pieceOneOver = this.game.chessBoard
-    .getCell(`${this.colToLetter(x + 1)}${y}`)
-    .getValue();
+      .getCell(`${this.colToLetter(x + 1)}${y}`)
+      .getValue();
     if (pieceOneOver instanceof Rook) {
       if (pieceOneOver.getMoveCount() < 1) {
         // this.castle();
@@ -202,9 +204,9 @@ export class King extends Piece {
     rookOldCell.setValid();
     rookOldCell.cellEl.removeChild(rook.pieceEl);
 
-    const colIndex = this.letterToCol(oldCell.position[0]); 
+    const colIndex = this.letterToCol(oldCell.position[0]);
     const newColLetter = this.colToLetter(colIndex + 1);
-    const row = oldCell.position[1]; 
+    const row = oldCell.position[1];
 
     const rookNewCell = this.game.chessBoard.getCell(`${newColLetter}${row}`);
 
@@ -213,8 +215,130 @@ export class King extends Piece {
     rook.currentCell = rookNewCell;
     rook.setLocation(rookNewCell.position);
 
-
     this.selectPiece();
     this.game.onMoveComplete();
+  }
+
+  isCheckingSelf(newCell) {
+    let oppPieces;
+    this.color == "white"
+      ? (oppPieces = this.game.blackPieces)
+      : (oppPieces = this.game.whitePieces);
+    for (const piece of oppPieces) {
+      console.log(piece);
+      console.log(piece.possibleMoves);
+      if (
+        piece instanceof Pawn &&
+        Array.isArray(piece.possibleCaptureMoves) &&
+        piece.possibleCaptureMoves.includes(newCell)
+      ) {
+        console.log("moving here will result in check 1");
+        return true;
+      } else if (
+        !(piece instanceof Pawn) &&
+        piece.possibleMoves.includes(newCell)
+      ) {
+        console.log("moving here will result in check 2");
+        return true;
+      }
+    }
+
+    if (newCell.isValid()) {
+      console.log(newCell);
+      console.log("this is a safe move");
+      return false;
+    }
+  }
+
+  isInCheck() {
+    const opponentPieces =
+      this.color === "white" ? this.game.blackPieces : this.game.whitePieces;
+
+    for (const piece of opponentPieces) {
+      if (
+        piece instanceof Pawn &&
+        piece.possibleCaptureMoves.includes(this.currentCell)
+      ) {
+        return true;
+      }
+      if (
+        !(piece instanceof Pawn) &&
+        piece.possibleMoves.includes(this.currentCell)
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  hasAvailableMoves() {
+    for (const cell of this.possibleMoves) {
+      if (this.isCheckingSelf(cell) == false) {
+        console.log("not checkmated yet");
+        return true;
+      }
+    }
+
+    console.log("is trapped");
+    return false;
+  }
+
+  isCheckmated() {
+    const myPieces =
+      this.color === "white" ? this.game.whitePieces : this.game.blackPieces;
+    const board = this.game.chessBoard;
+
+    for (const piece of myPieces) {
+      const originalCell = piece.currentCell;
+
+      for (const cell of piece.possibleMoves) {
+        const targetCell = cell; // handle string or Cell
+          console.log(piece);
+          console.log("to cell");
+          console.log(targetCell);
+
+        const occupant = targetCell.getValue();
+        if (occupant && occupant.getColor() === this.color) {
+          continue; // skip this move
+        }
+
+      // Save current state
+      const capturedPiece = occupant;
+        const prevPosition = piece.currentCell;
+
+        // Simulate move
+        piece.currentCell.setValid(); // remove piece from old cell
+        targetCell.setValue(piece); // place on new cell
+        piece.currentCell = targetCell;
+
+        // Recalculate opponent moves after this move
+        this.updateAllPaths(); // must exist!
+
+        const kingInCheck = this.isInCheck();
+
+        // Undo move
+        targetCell.setValue(capturedPiece);
+        piece.currentCell = prevPosition;
+        prevPosition.setValue(piece);
+
+        // Restore captured piece, if any
+        if (capturedPiece) {
+          capturedPiece.currentCell = targetCell;
+        }
+
+        this.updateAllPaths(); // reset to original state
+
+        // If king is not in check anymore, it’s not checkmate
+        console.log("is king still in check?");
+        console.log(kingInCheck)
+        if (!kingInCheck) {
+          console.log("not checkmated")
+          return false;
+        }
+      }
+    }
+    console.log("checkmated");
+    return true;
   }
 }

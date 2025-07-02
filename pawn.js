@@ -8,8 +8,7 @@ export class Pawn extends Piece {
   constructor(game, loc) {
     super(game, loc);
     this.captureMoveSet;
-
-    // this.checkAllPaths();
+    this.possibleCaptureMoves = [];
   }
 
   onFirstMove() {
@@ -112,6 +111,7 @@ export class Pawn extends Piece {
 
   checkAllPaths() {
     this.possibleMoves.length = 0;
+    this.possibleCaptureMoves.length = 0;
     for (const move of [...this.moveSet, ...this.captureMoveSet]) {
       // console.log(`checking path for move: ${move}`);
       const startCell = this.pieceEl.parentElement.cellObj;
@@ -159,20 +159,27 @@ export class Pawn extends Piece {
         );
 
         // console.log(currentCell.isValid());
-        if (!currentCell.isValid()) {
-          // console.log("cell ahead")
-          // console.log(this.captureMoveSet.includes(move));
-          if (this.captureMoveSet.includes(move) && currentCell.getValue().getColor() !== this.color) {
-            // console.log("adding to list");
+        // if (!currentCell.isValid()) {
+        //   // console.log("cell ahead")
+        //   // console.log(this.captureMoveSet.includes(move));
+          
+        //   break;
+        // } else if (currentCell.isValid()) {
+          
+        // } else {
+        //   break;
+        // }
+
+        if (this.moveSet.includes(move)) {
+          if (currentCell.isValid()) {
             this.possibleMoves.push(currentCell);
-          } 
-          break;
-        } else if (currentCell.isValid()) {
-          if (this.moveSet.includes(move)) {
-            this.possibleMoves.push(currentCell);
+          } else {
+            break;
           }
-        } else {
-          break;
+        } else if (this.captureMoveSet.includes(move)) {
+          //&& currentCell.getValue().getColor() !== this.color
+          // console.log("adding to capture list");
+          this.possibleCaptureMoves.push(currentCell);
         }
       }
     }
@@ -264,9 +271,13 @@ export class Pawn extends Piece {
     oldCell.setValid();
     oldCell.cellEl.removeChild(this.pieceEl);
     let idxPiece;
-    this.color == "white" ? idxPiece = this.game.whitePieces.indexOf(this) : idxPiece = this.game.blackPieces.indexOf(this);
+    this.color == "white"
+      ? (idxPiece = this.game.whitePieces.indexOf(this))
+      : (idxPiece = this.game.blackPieces.indexOf(this));
 
-    this.color == "white" ? this.game.whitePieces.splice(idxPiece, 1) : this.game.blackPieces.splice(idxPiece, 1);
+    this.color == "white"
+      ? this.game.whitePieces.splice(idxPiece, 1)
+      : this.game.blackPieces.splice(idxPiece, 1);
 
     cell.cellEl.appendChild(newPiece.pieceEl);
     newPiece.assignColor(this.color);
@@ -277,5 +288,22 @@ export class Pawn extends Piece {
     newPiece.setLocation(cell.position);
     this.updateAllPaths();
     newPiece.game.onMoveComplete();
+  }
+
+  highlightCells() {
+    super.highlightCells();
+    for (const cell of this.possibleCaptureMoves) {
+      if (!cell.isValid() && cell.getValue().getColor() !== this.color) {
+        cell.highlight();
+      }
+      
+    }
+  }
+
+  unhighlightCells() {
+    super.unhighlightCells();
+    for (const cell of this.possibleCaptureMoves) {
+      cell.unhighlight();
+    }
   }
 }

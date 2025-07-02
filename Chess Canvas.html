@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!-- saved from url=(0032)http://127.0.0.1:5500/index.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./Chess Canvas_files/styles.css"> 
+    <title>Chess Canvas</title>
+</head>
+<body class="vsc-initialized">
+    <div class="game-screen">
+        <div class="chess-frame">
+            <canvas id="board" width="800" height="800"></canvas>
+            <div id="overlay"><div class="cell" id="A8" style="left: 0px; top: 0px;"><div class="piece rook black"></div></div><div class="cell" id="B8" style="left: 100px; top: 0px;"><div class="piece knight black"></div></div><div class="cell" id="C8" style="left: 200px; top: 0px;"><div class="piece bishop black"></div></div><div class="cell" id="D8" style="left: 300px; top: 0px;"></div><div class="cell" id="E8" style="left: 400px; top: 0px;"><div class="piece king black"></div></div><div class="cell" id="F8" style="left: 500px; top: 0px;"><div class="piece bishop black"></div></div><div class="cell" id="G8" style="left: 600px; top: 0px;"><div class="piece knight black"></div></div><div class="cell" id="H8" style="left: 700px; top: 0px;"><div class="piece rook black"></div></div><div class="cell" id="A7" style="left: 0px; top: 100px;"><div class="piece pawn black"></div></div><div class="cell" id="B7" style="left: 100px; top: 100px;"><div class="piece pawn black"></div></div><div class="cell" id="C7" style="left: 200px; top: 100px;"><div class="piece pawn black"></div></div><div class="cell" id="D7" style="left: 300px; top: 100px;"><div class="piece pawn black"></div></div><div class="cell" id="E7" style="left: 400px; top: 100px;"></div><div class="cell" id="F7" style="left: 500px; top: 100px;"><div class="piece pawn black"></div></div><div class="cell" id="G7" style="left: 600px; top: 100px;"><div class="piece pawn black"></div></div><div class="cell" id="H7" style="left: 700px; top: 100px;"><div class="piece pawn black"></div></div><div class="cell" id="A6" style="left: 0px; top: 200px;"></div><div class="cell" id="B6" style="left: 100px; top: 200px;"></div><div class="cell" id="C6" style="left: 200px; top: 200px;"></div><div class="cell" id="D6" style="left: 300px; top: 200px;"></div><div class="cell" id="E6" style="left: 400px; top: 200px;"></div><div class="cell" id="F6" style="left: 500px; top: 200px;"></div><div class="cell" id="G6" style="left: 600px; top: 200px;"></div><div class="cell" id="H6" style="left: 700px; top: 200px;"></div><div class="cell" id="A5" style="left: 0px; top: 300px;"></div><div class="cell" id="B5" style="left: 100px; top: 300px;"></div><div class="cell" id="C5" style="left: 200px; top: 300px;"></div><div class="cell" id="D5" style="left: 300px; top: 300px;"></div><div class="cell" id="E5" style="left: 400px; top: 300px;"><div class="piece pawn white"></div></div><div class="cell" id="F5" style="left: 500px; top: 300px;"></div><div class="cell" id="G5" style="left: 600px; top: 300px;"></div><div class="cell" id="H5" style="left: 700px; top: 300px;"></div><div class="cell" id="A4" style="left: 0px; top: 400px;"></div><div class="cell" id="B4" style="left: 100px; top: 400px;"></div><div class="cell" id="C4" style="left: 200px; top: 400px;"></div><div class="cell" id="D4" style="left: 300px; top: 400px;"></div><div class="cell" id="E4" style="left: 400px; top: 400px;"><div class="piece pawn white"></div></div><div class="cell" id="F4" style="left: 500px; top: 400px;"></div><div class="cell" id="G4" style="left: 600px; top: 400px;"></div><div class="cell" id="H4" style="left: 700px; top: 400px;"></div><div class="cell" id="A3" style="left: 0px; top: 500px;"></div><div class="cell" id="B3" style="left: 100px; top: 500px;"></div><div class="cell" id="C3" style="left: 200px; top: 500px;"></div><div class="cell" id="D3" style="left: 300px; top: 500px;"></div><div class="cell" id="E3" style="left: 400px; top: 500px;"></div><div class="cell" id="F3" style="left: 500px; top: 500px;"></div><div class="cell" id="G3" style="left: 600px; top: 500px;"></div><div class="cell" id="H3" style="left: 700px; top: 500px;"></div><div class="cell" id="A2" style="left: 0px; top: 600px;"><div class="piece pawn white"></div></div><div class="cell" id="B2" style="left: 100px; top: 600px;"><div class="piece pawn white"></div></div><div class="cell" id="C2" style="left: 200px; top: 600px;"><div class="piece pawn white"></div></div><div class="cell" id="D2" style="left: 300px; top: 600px;"><div class="piece pawn white"></div></div><div class="cell" id="E2" style="left: 400px; top: 600px;"></div><div class="cell" id="F2" style="left: 500px; top: 600px;"><div class="piece king white"></div></div><div class="cell" id="G2" style="left: 600px; top: 600px;"></div><div class="cell" id="H2" style="left: 700px; top: 600px;"><div class="piece pawn white"></div></div><div class="cell" id="A1" style="left: 0px; top: 700px;"><div class="piece rook white"></div></div><div class="cell" id="B1" style="left: 100px; top: 700px;"><div class="piece knight white"></div></div><div class="cell" id="C1" style="left: 200px; top: 700px;"><div class="piece bishop white"></div></div><div class="cell" id="D1" style="left: 300px; top: 700px;"><div class="piece queen white"></div></div><div class="cell" id="E1" style="left: 400px; top: 700px;"></div><div class="cell" id="F1" style="left: 500px; top: 700px;"><div class="piece bishop white"></div></div><div class="cell" id="G1" style="left: 600px; top: 700px;"><div class="piece knight white"></div></div><div class="cell" id="H1" style="left: 700px; top: 700px;"><div class="piece rook white"></div></div></div>
+        </div>
+    </div>
+    <script type="module" src="./Chess Canvas_files/game.js"></script>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+
+</body></html>
