@@ -42,17 +42,31 @@ export class Knight extends Piece {
 
     console.log(`${move} is legal: ${isLegal}`);
 
-    if (isLegal && this.checkDestinationCell(newCell)) {
-      this.moveCount++;
+    const isPossible = this.legalMoves.some(
+      (cell) => cell.position === newCell.position
+    );
 
-      if (this.moveCount === 1) {
-        this.onFirstMove?.();
+    if (
+      this.game.checkedKing &&
+      this.game.checkedKing.getColor() == this.color
+    ) {
+      if (isLegal && isPossible && this.checkDestinationCell(newCell)) {
+        this.moveCount++;
+        this.movePiece(newCell, oldCell);
+        return true;
+      } else {
+        console.log("select an allowed cell");
+        return false;
       }
-      this.movePiece(newCell, oldCell);
-      return true;
     } else {
-      console.log("select an allowed cell");
-      return false;
+      if (isLegal && this.checkDestinationCell(newCell)) {
+        this.moveCount++;
+        this.movePiece(newCell, oldCell);
+        return true;
+      } else {
+        console.log("select an allowed cell");
+        return false;
+      }
     }
   }
 

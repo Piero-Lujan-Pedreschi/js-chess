@@ -49,12 +49,17 @@ export class King extends Piece {
       this.isSameOrShorterMove(ms, move)
     );
 
+    const isPossible = this.possibleMoves.some(
+      (cell) => cell.position === newCell.position
+    );
+
     console.log(`${move} is legal: ${isLegal}`);
 
     if (
       isLegal &&
-      this.isPathClear(newCell, move) &&
-      !this.isCheckingSelf(newCell)
+      isPossible &&
+      !this.isCheckingSelf(newCell) &&
+      this.isPathClear(newCell, move) 
     ) {
       this.moveCount++;
 
@@ -73,25 +78,6 @@ export class King extends Piece {
       console.log("select an allowed cell");
       return false;
     }
-  }
-
-  movePiece(newCell, oldCell) {
-    console.log(`piece can move to ${newCell.position}`);
-    const cell = newCell;
-    console.log("unselecting piece");
-    this.selectPiece();
-
-    oldCell.cellEl.style.backgroundColor = "";
-    oldCell.setValid();
-    oldCell.cellEl.removeChild(this.pieceEl);
-
-    cell.cellEl.appendChild(this.pieceEl);
-    cell.setValue(this);
-    this.game.pieceSelected = null;
-    this.currentCell = cell;
-    this.setLocation(cell.position);
-    this.updateAllPaths();
-    this.game.onMoveComplete();
   }
 
   isPathClear(newCell) {
@@ -148,7 +134,14 @@ export class King extends Piece {
     console.log(`piece on target = `);
     console.log(targetPiece);
     if (targetPiece && targetPiece.getColor() !== this.color) {
-      this.capturePiece(newCell);
+      // if (!this.isCheckingSelf()) {
+      //   this.capturePiece(newCell);
+      // } else {
+      //   console.log("capturing will result in check");
+      //   return false;
+      // }
+      this.capturePiece(newCell)
+      
     } else if (targetPiece && targetPiece.getColor() === this.color) {
       console.log("cannot capture piece of same color");
       return false;
@@ -220,34 +213,15 @@ export class King extends Piece {
   }
 
   isCheckingSelf(newCell) {
-    let oppPieces;
-    this.color == "white"
-      ? (oppPieces = this.game.blackPieces)
-      : (oppPieces = this.game.whitePieces);
-    for (const piece of oppPieces) {
-      console.log(piece);
-      console.log(piece.possibleMoves);
-      if (
-        piece instanceof Pawn &&
-        Array.isArray(piece.possibleCaptureMoves) &&
-        piece.possibleCaptureMoves.includes(newCell)
-      ) {
-        console.log("moving here will result in check 1");
-        return true;
-      } else if (
-        !(piece instanceof Pawn) &&
-        piece.possibleMoves.includes(newCell)
-      ) {
-        console.log("moving here will result in check 2");
-        return true;
-      }
-    }
+    // Simulate the move
+    const simData = this.simulateMove(this, newCell);
+    this.updateAllPaths();
+    const isNowInCheck = this.isInCheck();
+    isNowInCheck ? console.log("checking self") : console.log("is a safe move");
+    this.game.undoSimulateMove(this, simData);
+    this.game.updateAllPaths();
 
-    if (newCell.isValid()) {
-      console.log(newCell);
-      console.log("this is a safe move");
-      return false;
-    }
+    return isNowInCheck;
   }
 
   isInCheck() {
@@ -255,20 +229,11 @@ export class King extends Piece {
       this.color === "white" ? this.game.blackPieces : this.game.whitePieces;
 
     for (const piece of opponentPieces) {
-      if (
-        piece instanceof Pawn &&
-        piece.possibleCaptureMoves.includes(this.currentCell)
-      ) {
-        return true;
-      }
-      if (
-        !(piece instanceof Pawn) &&
-        piece.possibleMoves.includes(this.currentCell)
-      ) {
-        return true;
-      }
+     if (piece.possibleMoves.includes(this.currentCell)) {
+      // console.log(piece);
+      return true;
+     }
     }
-
     return false;
   }
 
@@ -292,49 +257,78 @@ export class King extends Piece {
     for (const piece of myPieces) {
       const originalCell = piece.currentCell;
 
-      for (const cell of piece.possibleMoves) {
-        const targetCell = cell; // handle string or Cell
-          console.log(piece);
-          console.log("to cell");
-          console.log(targetCell);
+      // console.log("checking if possibleMoves array is valid for new piece");
+      // console.log(Array.isArray(piece.possibleMoves)); // should be true
 
-        const occupant = targetCell.getValue();
-        if (occupant && occupant.getColor() === this.color) {
-          continue; // skip this move
+      // if (Array.isArray(piece.possibleMoves)) {
+        for (const cell of piece.possibleMoves) {
+          // console.log("cycling through possible Moves");
+          const targetCell = cell; // handle string or Cell
+          // console.log(piece);
+          // console.log("to cell");
+          // console.log(targetCell);
+
+          const occupant = targetCell.getValue();
+          if (occupant && occupant.getColor() === this.color) {
+            continue; // skip this move
+          }
+
+          // Simulate move
+          const simData = this.game.simulateMove(piece, targetCell);
+
+          // Recalculate opponent moves after this move
+          this.updateAllPaths(); // must exist!
+
+          const kingInCheck = this.isInCheck();
+
+          // Undo move
+          this.game.undoSimulateMove(piece, simData);
+
+          this.updateAllPaths(); // reset to original state
+
+          // If king is not in check anymore, it’s not checkmate
+          console.log("is king still in check?");
+          console.log(kingInCheck);
+          if (!kingInCheck) {
+            console.log("not checkmated");
+            return false;
+          }
         }
+      // }
 
-      // Save current state
-      const capturedPiece = occupant;
-        const prevPosition = piece.currentCell;
+      if (piece instanceof Pawn) {
+        // console.log("cycling through passive moves");
+        for (const cell of piece.passiveMoves) {
+          const targetCell = cell; // handle string or Cell
+          // console.log(piece);
+          // console.log("to cell");
+          // console.log(targetCell);
 
-        // Simulate move
-        piece.currentCell.setValid(); // remove piece from old cell
-        targetCell.setValue(piece); // place on new cell
-        piece.currentCell = targetCell;
+          const occupant = targetCell.getValue();
+          if (occupant && occupant.getColor() === this.color) {
+            continue; // skip this move
+          }
 
-        // Recalculate opponent moves after this move
-        this.updateAllPaths(); // must exist!
+          // Simulate move
+          const simData = this.game.simulateMove(piece, targetCell);
 
-        const kingInCheck = this.isInCheck();
+          // Recalculate opponent moves after this move
+          this.updateAllPaths(); // must exist!
 
-        // Undo move
-        targetCell.setValue(capturedPiece);
-        piece.currentCell = prevPosition;
-        prevPosition.setValue(piece);
+          const kingInCheck = this.isInCheck();
 
-        // Restore captured piece, if any
-        if (capturedPiece) {
-          capturedPiece.currentCell = targetCell;
-        }
+          // Undo move
+          this.game.undoSimulateMove(piece, simData);
 
-        this.updateAllPaths(); // reset to original state
+          this.updateAllPaths(); // reset to original state
 
-        // If king is not in check anymore, it’s not checkmate
-        console.log("is king still in check?");
-        console.log(kingInCheck)
-        if (!kingInCheck) {
-          console.log("not checkmated")
-          return false;
+          // If king is not in check anymore, it’s not checkmate
+          // console.log("is king still in check?");
+          // console.log(kingInCheck);
+          if (!kingInCheck) {
+            console.log("not checkmated");
+            return false;
+          }
         }
       }
     }

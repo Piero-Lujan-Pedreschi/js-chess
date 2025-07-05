@@ -8,7 +8,7 @@ export class Pawn extends Piece {
   constructor(game, loc) {
     super(game, loc);
     this.captureMoveSet;
-    this.possibleCaptureMoves = [];
+    this.passiveMoves = [];
   }
 
   onFirstMove() {
@@ -68,9 +68,9 @@ export class Pawn extends Piece {
 
     const move = [dx, dy];
 
-    const isLegal = this.moveSet.some((ms) =>
-      this.isSameOrShorterMove(ms, move)
-    );
+    const isLegal = this.moveSet.some((ms) => this.isSameOrShorterMove(ms, move));
+
+    const isPossible = this.legalMoves.some((cell) => cell.position === newCell.position)
 
     const isCaptureLegal = this.captureMoveSet.some((ms) =>
       this.isSameOrShorterMove(ms, move)
@@ -78,40 +78,76 @@ export class Pawn extends Piece {
 
     console.log(`${move} is legal: ${isLegal}`);
 
-    if (isLegal && this.isPathClear(newCell, move)) {
-      this.moveCount++;
+      
 
-      if (this.moveCount === 1) {
-        this.onFirstMove?.();
-      }
+    if (this.game.checkedKing && this.game.checkedKing.getColor() == this.color) {
+      if (isLegal && isPossible && this.isPathClear(newCell, move)) {
+        this.moveCount++;
 
-      if (yf == 1 || yf == 8) {
-        console.log("promoting and moving");
-        this.promotion(newCell, oldCell);
+        if (this.moveCount === 1) {
+          this.onFirstMove?.();
+        }
+
+        if (yf == 1 || yf == 8) {
+          console.log("promoting and moving");
+          this.promotion(newCell, oldCell);
+          return true;
+        }
+
+        this.movePiece(newCell, oldCell);
         return true;
+      } else if (isCaptureLegal && this.isCaptureClear(newCell)) {
+        this.moveCount++;
+
+        if (yf == 1 || yf == 8) {
+          console.log("promoting and capturing");
+          this.promotion(newCell, oldCell);
+          return true;
+        }
+
+        this.movePiece(newCell, oldCell);
+      } else {
+        console.log("select an allowed cell");
+        return false;
       }
-
-      this.movePiece(newCell, oldCell);
-      return true;
-    } else if (isCaptureLegal && this.isCaptureClear(newCell)) {
-      this.moveCount++;
-
-      if (yf == 1 || yf == 8) {
-        console.log("promoting and capturing");
-        this.promotion(newCell, oldCell);
-        return true;
-      }
-
-      this.movePiece(newCell, oldCell);
     } else {
-      console.log("select an allowed cell");
-      return false;
+      if (isLegal && this.isPathClear(newCell, move)) {
+        this.moveCount++;
+
+        if (this.moveCount === 1) {
+          this.onFirstMove?.();
+        }
+
+        if (yf == 1 || yf == 8) {
+          console.log("promoting and moving");
+          this.promotion(newCell, oldCell);
+          return true;
+        }
+
+        this.movePiece(newCell, oldCell);
+        return true;
+      } else if (isCaptureLegal && this.isCaptureClear(newCell)) {
+        this.moveCount++;
+
+        if (yf == 1 || yf == 8) {
+          console.log("promoting and capturing");
+          this.promotion(newCell, oldCell);
+          return true;
+        }
+
+        this.movePiece(newCell, oldCell);
+      } else {
+        console.log("select an allowed cell");
+        return false;
+      }
     }
   }
 
   checkAllPaths() {
+    if (this.isCaptured) return;
+
     this.possibleMoves.length = 0;
-    this.possibleCaptureMoves.length = 0;
+    this.passiveMoves.length = 0;
     for (const move of [...this.moveSet, ...this.captureMoveSet]) {
       // console.log(`checking path for move: ${move}`);
       const startCell = this.pieceEl.parentElement.cellObj;
@@ -158,32 +194,17 @@ export class Pawn extends Piece {
           `${this.colToLetter(x)}${y}`
         );
 
-        // console.log(currentCell.isValid());
-        // if (!currentCell.isValid()) {
-        //   // console.log("cell ahead")
-        //   // console.log(this.captureMoveSet.includes(move));
-          
-        //   break;
-        // } else if (currentCell.isValid()) {
-          
-        // } else {
-        //   break;
-        // }
-
         if (this.moveSet.includes(move)) {
           if (currentCell.isValid()) {
-            this.possibleMoves.push(currentCell);
-          } else {
-            break;
-          }
+            this.passiveMoves.push(currentCell);
+          } 
         } else if (this.captureMoveSet.includes(move)) {
-          //&& currentCell.getValue().getColor() !== this.color
-          // console.log("adding to capture list");
-          this.possibleCaptureMoves.push(currentCell);
+          if (currentCell.getValue() && currentCell.getValue().getColor() !== this.color) {
+            this.possibleMoves.push(currentCell);
+          } 
         }
       }
     }
-    // console.log(this.possibleMoves);
   }
 
   isPathClear(newCell) {
@@ -291,8 +312,10 @@ export class Pawn extends Piece {
   }
 
   highlightCells() {
-    super.highlightCells();
-    for (const cell of this.possibleCaptureMoves) {
+    for (const cell of this.passiveMoves) {
+      cell.highlight();
+    }
+    for (const cell of this.possibleMoves) {
       if (!cell.isValid() && cell.getValue().getColor() !== this.color) {
         cell.highlight();
       }
@@ -302,7 +325,7 @@ export class Pawn extends Piece {
 
   unhighlightCells() {
     super.unhighlightCells();
-    for (const cell of this.possibleCaptureMoves) {
+    for (const cell of this.passiveMoves) {
       cell.unhighlight();
     }
   }

@@ -13,6 +13,8 @@ export class Piece {
     this.game = game;
     // this.checkAllPaths();
     this.possibleMoves = [];
+    this.legalMoves = [];  //only use when king is checked
+    this.isCaptured = false;
   }
 
   assignColor(color) {
@@ -66,7 +68,7 @@ export class Piece {
       // console.log(this.selected);
       if (this.selected) {
         cellEl.style.backgroundColor = "rgba(142, 240, 56, 0.41)";
-        console.log('piece has been selected');
+        console.log("piece has been selected");
         this.game.pieceSelected = this;
         // console.log(this.game.pieceSelected);
         this.checkAllPaths();
@@ -101,20 +103,43 @@ export class Piece {
       this.isSameOrShorterMove(ms, move)
     );
 
+    const isPossible = this.legalMoves.some(
+      (cell) => cell.position === newCell.position
+    );
+
     console.log(`${move} is legal: ${isLegal}`);
 
-    if (isLegal && this.isPathClear(newCell, move)) {
-      this.moveCount++;
+    if (
+      this.game.checkedKing &&
+      this.game.checkedKing.getColor() == this.color
+    ) {
+      if (isLegal && isPossible && this.isPathClear(newCell, move)) {
+        this.moveCount++;
 
-      if (this.moveCount === 1) {
-        this.onFirstMove?.();
+        if (this.moveCount === 1) {
+          this.onFirstMove?.();
+        }
+
+        this.movePiece(newCell, oldCell);
+        return true;
+      } else {
+        console.log("select an allowed cell");
+        return false;
       }
-
-      this.movePiece(newCell, oldCell);
-      return true;
     } else {
-      console.log("select an allowed cell");
-      return false;
+      if (isLegal && this.isPathClear(newCell, move)) {
+        this.moveCount++;
+
+        if (this.moveCount === 1) {
+          this.onFirstMove?.();
+        }
+
+        this.movePiece(newCell, oldCell);
+        return true;
+      } else {
+        console.log("select an allowed cell");
+        return false;
+      }
     }
   }
 
@@ -140,6 +165,8 @@ export class Piece {
     for (const piece of this.game.whitePieces) {
       // console.log(piece);
       piece.checkAllPaths();
+      // console.log(piece);
+      // console.log(piece.possibleMoves);
     }
     for (const piece of this.game.blackPieces) {
       // console.log(piece);
@@ -148,6 +175,8 @@ export class Piece {
   }
 
   checkAllPaths() {
+    if (this.isCaptured) return;
+
     this.possibleMoves.length = 0;
     for (const move of this.moveSet) {
       // console.log(`checking path for move: ${move}`);
@@ -195,15 +224,15 @@ export class Piece {
         currentCell = this.game.chessBoard.getCell(
           `${this.colToLetter(x)}${y}`
         );
+        const piece = currentCell.getValue();
 
-        // console.log(currentCell.isValid());
-        if (!currentCell.isValid()) {
-          this.possibleMoves.push(currentCell);
-          break;
-        } else if (currentCell.isValid()) {
-          this.possibleMoves.push(currentCell);
+        if (piece === null) {
+          this.possibleMoves.push(currentCell); // empty square
+        } else if (piece.getColor() !== this.color) {
+          this.possibleMoves.push(currentCell); // enemy piece (can capture)
+          break; // can't go past captured piece
         } else {
-          break;
+          break; // blocked by ally
         }
       }
     }
@@ -211,9 +240,7 @@ export class Piece {
 
   highlightCells() {
     for (const cell of this.possibleMoves) {
-      if (cell.isValid() || cell.getValue().getColor() !== this.color) {
-        cell.highlight();
-      } 
+      cell.highlight();
     }
   }
 
@@ -337,6 +364,8 @@ export class Piece {
 
       // Push to taken list
       takenArray.push(capturedPiece);
+      capturedPiece.reset();
+      capturedPiece.isCaptured = true;
 
       console.log(`white taken pieces:`, this.game.whiteTakenPieces);
       console.log(`black taken pieces:`, this.game.blackTakenPieces);
@@ -366,6 +395,14 @@ export class Piece {
       Math.abs(dx) <= Math.abs(dxSet) && Math.abs(dy) <= Math.abs(dySet);
 
     return sameDirection && withinBounds;
+  }
+
+  reset() {
+    this.currentCell = null;
+    this.pieceEl = null;
+    this.location = null;
+    this.selected = false;
+    this.moveCount = 0;
   }
 
   letterToCol(letter) {
